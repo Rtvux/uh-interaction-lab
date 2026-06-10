@@ -1102,6 +1102,91 @@
   @media (prefers-reduced-motion: reduce) {
     .nf-card.animating, .nf-card.leaving { transition-duration: 140ms; }
   }
+
+  /* ══════════════════════════════════════════
+     COMPONENT · Calibration · Dynamic Island (interaction 07)
+     1:1 with Figma · Project Phoenix · node 4960-31368
+     iOS Dynamic Island: card morphs out of the notch, figure glows,
+     auto-collapses after 8s or on swipe-up. First-open, first 14 days.
+     ══════════════════════════════════════════ */
+  .ci-phone {
+    --speed: 1;
+    --spring: cubic-bezier(0.32, 1.28, 0.5, 1);
+    --out: cubic-bezier(0.22, 1, 0.36, 1);
+    position: relative; width: 402px; height: 580px;
+    background: #fbfbfb; border-radius: 46px; overflow: hidden;
+    border: 1px solid rgba(0,0,0,0.06);
+    box-shadow: 0 1px 2px rgba(0,0,0,0.05), 0 20px 56px -26px rgba(0,0,0,0.35);
+    user-select: none; -webkit-tap-highlight-color: transparent;
+  }
+  /* status bar */
+  .ci-status { position: absolute; top: 0; left: 0; right: 0; height: 54px; display: flex; align-items: flex-start; justify-content: space-between; padding: 17px 32px 0; font-family: var(--sans); z-index: 5; }
+  .ci-time { font-weight: 600; font-size: 15px; color: #0f0f0f; letter-spacing: 0.2px; }
+  .ci-sbicons { display: flex; gap: 7px; align-items: center; color: #0f0f0f; }
+  .ci-sbicons svg { height: 12px; width: auto; display: block; }
+  /* home backdrop */
+  .ci-home { position: absolute; inset: 0; padding: 70px 22px 0; }
+  .ci-hlabel { font-family: var(--sans); font-size: 13px; color: #52525b; margin: 8px 2px 18px; }
+  .ci-effrow { display: flex; align-items: center; justify-content: space-between; gap: 18px; }
+  .ci-effort { width: 166px; height: 166px; border-radius: 50%; flex: none; display: flex; flex-direction: column; align-items: center; justify-content: center; color: #fff;
+    background: radial-gradient(circle at 36% 28%, #ffc09a, #ec6440 44%, #d8472d 72%, #1fb6b6 120%);
+    box-shadow: inset 0 0 34px rgba(0,0,0,0.18); }
+  .ci-effort b { font-weight: 300; font-size: 56px; line-height: 1; }
+  .ci-effort span { font-family: var(--mono); font-size: 11px; letter-spacing: 2px; margin-top: 6px; opacity: 0.92; }
+  .ci-scores { display: flex; flex-direction: column; gap: 16px; align-items: flex-end; }
+  .ci-score b { font-weight: 300; font-size: 26px; color: #0f0f0f; line-height: 1; }
+  .ci-score .lab { font-family: var(--mono); font-size: 11px; letter-spacing: 1px; color: #52525b; text-transform: uppercase; margin-top: 2px; }
+  /* tab bar */
+  .ci-tabs { position: absolute; left: 0; right: 0; bottom: 0; height: 62px; background: rgba(255,255,255,0.92); backdrop-filter: blur(8px); border-top: 1px solid rgba(0,0,0,0.06); display: flex; align-items: center; justify-content: space-around; padding: 0 18px 8px; }
+  .ci-tab { font-family: var(--mono); font-size: 9px; letter-spacing: 1px; color: #a1a1aa; text-transform: uppercase; }
+  .ci-tab.center { width: 40px; height: 40px; border-radius: 50%; background: #0f0f0f; color: #fff; display: grid; place-items: center; font-size: 16px; }
+
+  /* ── Dynamic Island ── */
+  .ci-island {
+    position: absolute; left: 50%; top: 11px; transform: translateX(-50%);
+    width: 126px; height: 37px; border-radius: 22px;
+    background: #000; overflow: hidden; z-index: 20; cursor: pointer;
+    border: 1.5px solid rgba(255,255,255,0);
+    transition: width calc(560ms*var(--speed)) var(--spring),
+                height calc(560ms*var(--speed)) var(--spring),
+                top calc(560ms*var(--speed)) var(--spring),
+                border-radius calc(560ms*var(--speed)) var(--spring),
+                border-color calc(300ms*var(--speed)) ease,
+                transform calc(340ms*var(--speed)) var(--out);
+  }
+  .ci-island[data-state="expanded"] {
+    width: 386px; height: 180px; top: 8px; border-radius: 44px;
+    border-color: rgba(255,255,255,0.2); cursor: grab;
+  }
+  .ci-island.dragging { transition: none; cursor: grabbing; }
+
+  .ci-content { position: absolute; inset: 0; opacity: 0; transition: opacity calc(180ms*var(--speed)) var(--out); }
+  .ci-island[data-state="expanded"] .ci-content { opacity: 1; transition-delay: calc(170ms*var(--speed)); }
+
+  .ci-msg { position: absolute; left: 22px; top: 54px; width: 220px; }
+  .ci-h { font-family: var(--sans); font-weight: 400; font-size: 14px; line-height: 20px; color: #fff; white-space: nowrap; }
+  .ci-sub { font-family: var(--sans); font-weight: 400; font-size: 11px; line-height: 16px; letter-spacing: 0.4px; color: #8a8a8a; white-space: nowrap; }
+  .ci-days { font-family: var(--mono); font-weight: 500; font-size: 14px; line-height: 20px; text-transform: uppercase; color: #fff; margin-top: 24px; }
+  .ci-bar { width: 200px; height: 4px; border-radius: 30px; background: rgba(255,255,255,0.2); margin-top: 8px; overflow: hidden; }
+  .ci-bar-fill { height: 100%; width: 0; background: #0e2ed0; border-radius: 30px; transition: width calc(900ms*var(--speed)) var(--out) calc(360ms*var(--speed)); }
+  .ci-island[data-state="expanded"] .ci-bar-fill { width: 56px; }
+
+  .ci-figure { position: absolute; right: 16px; top: 50%; transform: translateY(-50%); width: 142px; height: 142px; }
+  .ci-fig-ring { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: contain; }
+  .ci-fig-img { position: absolute; left: 50%; top: 50%; transform: translate(-50%, -50%); width: 104px; height: 104px; object-fit: contain; }
+  .ci-glow { position: absolute; left: 50%; top: 50%; transform: translate(-50%,-50%); width: 120px; height: 120px; border-radius: 50%;
+    background: url("assets/calibration/figure.png") center / 86% no-repeat;
+    filter: blur(11px) saturate(1.6) brightness(1.25); opacity: 0; }
+  .ci-island[data-state="expanded"] .ci-glow { animation: ciGlow calc(2.8s*var(--speed)) ease-in-out infinite; }
+  @keyframes ciGlow {
+    0%, 100% { opacity: 0.4; transform: translate(-50%,-50%) scale(1); }
+    50%      { opacity: 0.9; transform: translate(-50%,-50%) scale(1.12); }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .ci-island { transition-duration: 200ms; }
+    .ci-island[data-state="expanded"] .ci-glow { animation: none; opacity: 0.6; }
+  }
 </style>
 </head>
 <body>
@@ -1684,6 +1769,88 @@
     </div>
   </section>
 
+  <!-- ══ 07 · Calibration · Dynamic Island ════ -->
+  <section class="ix" id="calibration">
+    <div class="ix-head">
+      <div class="ix-title">
+        <span class="ix-num">07</span>
+        <h2>Calibration · Dynamic Island</h2>
+      </div>
+      <button class="spec-btn" data-spec="calibration" data-title="Calibration · Motion spec" data-sub="Figma · Project Phoenix · node 4960-31368 · iOS">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/></svg>
+        Motion spec
+      </button>
+    </div>
+
+    <div class="ix-stage">
+      <div class="ci-phone" id="ciPhone">
+        <!-- home backdrop (representative) -->
+        <div class="ci-home">
+          <div class="ci-hlabel">YOUR EFFORT FOR THE DAY</div>
+          <div class="ci-effrow">
+            <div class="ci-effort"><b>91</b><span>EFFORT</span></div>
+            <div class="ci-scores">
+              <div class="ci-score"><b>89</b><div class="lab">Sleep</div></div>
+              <div class="ci-score"><b>79</b><div class="lab">Recovery</div></div>
+              <div class="ci-score"><b>92</b><div class="lab">Movement</div></div>
+            </div>
+          </div>
+        </div>
+
+        <!-- status bar -->
+        <div class="ci-status">
+          <div class="ci-time">9:41</div>
+          <div class="ci-sbicons">
+            <svg viewBox="0 0 18 12" fill="currentColor"><rect x="0" y="7" width="3" height="5" rx="1"/><rect x="5" y="4" width="3" height="8" rx="1"/><rect x="10" y="1.5" width="3" height="10.5" rx="1"/><rect x="15" y="0" width="3" height="12" rx="1"/></svg>
+            <svg viewBox="0 0 16 12" fill="currentColor"><path d="M8 2.5c2.3 0 4.4.9 6 2.4l-1.4 1.4A6.6 6.6 0 0 0 8 5.3c-1.8 0-3.4.7-4.6 1.9L2 5.9A8.6 8.6 0 0 1 8 2.5Zm0 3.6c1.3 0 2.5.5 3.4 1.4L8 11l-3.4-3.5A4.8 4.8 0 0 1 8 6.1Z"/></svg>
+            <svg viewBox="0 0 26 12" fill="none"><rect x="1" y="1" width="21" height="10" rx="3" stroke="currentColor" stroke-opacity="0.4"/><rect x="3" y="3" width="16" height="6" rx="1.5" fill="currentColor"/><rect x="23.5" y="4" width="1.5" height="4" rx="0.75" fill="currentColor" fill-opacity="0.4"/></svg>
+          </div>
+        </div>
+
+        <!-- tab bar -->
+        <div class="ci-tabs">
+          <div class="ci-tab">Home</div>
+          <div class="ci-tab">Longevity</div>
+          <div class="ci-tab center">✻</div>
+          <div class="ci-tab">Plugs</div>
+          <div class="ci-tab">Zones</div>
+        </div>
+
+        <!-- Dynamic Island -->
+        <div class="ci-island" id="ciIsland" data-state="compact" role="button" tabindex="0" aria-label="Calibration update">
+          <div class="ci-content">
+            <div class="ci-msg">
+              <div class="ci-h">Baseline calibration started</div>
+              <div class="ci-sub">Keep wearing your Ring</div>
+              <div class="ci-days">12 days left</div>
+              <div class="ci-bar"><div class="ci-bar-fill"></div></div>
+            </div>
+            <div class="ci-figure">
+              <div class="ci-glow"></div>
+              <img class="ci-fig-img" src="assets/calibration/figure.png" alt="" />
+              <img class="ci-fig-ring" src="assets/calibration/ring-frame.png" alt="" />
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="stage-foot">
+        <div class="ctl">
+          <div class="ctl-group">
+            <span class="ctl-label">Speed</span>
+            <div class="seg" data-seg="ci-speed">
+              <button data-speed="1" class="on">1×</button>
+              <button data-speed="2">0.5×</button>
+              <button data-speed="4">0.25×</button>
+            </div>
+          </div>
+          <button class="btn-ghost" data-ci-replay>Replay</button>
+        </div>
+        <div class="stage-hint">Auto-plays on first open · expands from the island, glows, auto-collapses after 8s · swipe up to dismiss</div>
+      </div>
+    </div>
+  </section>
+
 </main>
 
 <!-- ── Spec modal (shared) ─────────────────── -->
@@ -1940,6 +2107,50 @@
   </div>
 </template>
 
+<template id="spec-calibration">
+  <div class="acc open">
+    <button class="acc-head"><span>01 · When it fires</span><svg class="chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg></button>
+    <div class="acc-body"><div class="acc-inner"><div class="spec">
+      <div class="sp"><div class="sp-t">First 14 days only · once per day, on the first app open of the day</div>
+        <div class="sp-p">iOS-specific. Implement as a Live Activity / Dynamic Island presentation (ActivityKit) — not an in-app overlay — so it behaves like the system island.</div></div>
+      <div class="sp"><div class="sp-t">Gate on: calibrationActive && daysElapsed &lt; 14 && !shownToday — then present once.</div></div>
+    </div></div></div>
+  </div>
+  <div class="acc">
+    <button class="acc-head"><span>02 · Expand from the island</span><svg class="chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg></button>
+    <div class="acc-body"><div class="acc-inner"><div class="spec">
+      <div class="sp"><div class="sp-t">Compact pill → expanded card morph <span class="sp-v">126×37 → 386×180, r22 → r44, 560ms · cubic-bezier(0.32,1.28,0.5,1)</span></div>
+        <div class="sp-p">Size + corner-radius morph from the notch with a gentle overshoot — the Dynamic Island signature. iOS: matched-geometry / .expanded presentation; the system spring handles this natively.</div></div>
+      <div class="sp"><div class="sp-t">Content fades in after the shape opens <span class="sp-v">opacity 180ms · delay 170ms</span></div></div>
+      <div class="sp"><div class="sp-t">Progress bar fills 0 → 56px <span class="sp-v">900ms ease-out · delay 360ms</span></div></div>
+      <div class="sp"><div class="sp-t">Hairline border fades in rgba(255,255,255,0.2)</div></div>
+    </div></div></div>
+  </div>
+  <div class="acc">
+    <button class="acc-head"><span>03 · The figure glows</span><svg class="chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg></button>
+    <div class="acc-body"><div class="acc-inner"><div class="spec">
+      <div class="sp"><div class="sp-t">Soft colored halo behind the anatomical ring breathes <span class="sp-v">2.8s · ease-in-out · opacity 0.4↔0.9 · scale 1↔1.12</span></div>
+        <div class="sp-p">A blurred, saturated copy of the figure — reads as the ring "coming alive" while calibrating. Loops for the life of the presentation.</div></div>
+    </div></div></div>
+  </div>
+  <div class="acc">
+    <button class="acc-head"><span>04 · Dismiss</span><svg class="chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg></button>
+    <div class="acc-body"><div class="acc-inner"><div class="spec">
+      <div class="sp"><div class="sp-t">Auto-collapse after <span class="sp-v">8s</span> back into the compact island (same morph, reversed)</div></div>
+      <div class="sp"><div class="sp-t">Or swipe up to dismiss early <span class="sp-v">commit at −44px or velocity &gt; 0.4 px/ms</span>; below threshold it settles back &amp; the 8s timer resumes</div></div>
+      <div class="sp"><div class="sp-t">It returns to the compact island (it doesn't vanish) — the island stays as the live calibration indicator for the day.</div></div>
+    </div></div></div>
+  </div>
+  <div class="acc">
+    <button class="acc-head"><span>Tokens</span><svg class="chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg></button>
+    <div class="acc-body"><div class="acc-inner"><div class="spec">
+      <div class="sp"><div class="sp-t">Card #000 · r44 · 1.5px rgba(255,255,255,.2) border · 386×180</div></div>
+      <div class="sp"><div class="sp-t">Heading TWK Everett 14 #fff · sub 11 #8A8A8A · "N DAYS LEFT" JetBrains Mono 14 #fff · bar fill #0E2ED0 on rgba(255,255,255,.2)</div></div>
+      <div class="sp"><div class="sp-t">Figure = anatomical render + metallic ring frame, ~110/142px, right-aligned</div></div>
+    </div></div></div>
+  </div>
+</template>
+
 <template id="spec-stacked-notifications">
   <div class="acc open">
     <button class="acc-head"><span>01 · The stack</span><svg class="chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg></button>
@@ -1981,7 +2192,7 @@
 <script>
   // ── Responsive: wrap each fixed-width mock so it scales to fit the viewport ──
   (function () {
-    [['#lpCard',370], ['#biCard',370], ['#lpCardV2',370], ['#adCard',370], ['#batScreen',402], ['.nf-wrap',370]]
+    [['#lpCard',370], ['#biCard',370], ['#lpCardV2',370], ['#adCard',370], ['#batScreen',402], ['.nf-wrap',370], ['#ciPhone',402]]
       .forEach(([sel, mw]) => {
         const el = document.querySelector(sel);
         if (!el || el.parentElement.classList.contains('ix-fit')) return;
@@ -2629,6 +2840,81 @@
     stage.querySelector('[data-nf-reset]').addEventListener('click', build);
 
     build();
+  })();
+
+  // ── Calibration · Dynamic Island ────────────
+  (function () {
+    const phone = document.getElementById('ciPhone');
+    if (!phone) return;
+    const island = document.getElementById('ciIsland');
+    const stage = phone.closest('.ix-stage');
+    const speed = () => +(phone.style.getPropertyValue('--speed') || 1);
+    let autoT = null, shown = false;
+
+    function expand() {
+      clearTimeout(autoT);
+      island.dataset.state = 'expanded';
+      island.style.transform = 'translateX(-50%)';
+      autoT = setTimeout(collapse, 8000 * speed());   // auto-dismiss after 8s
+    }
+    function collapse() {
+      clearTimeout(autoT);
+      island.dataset.state = 'compact';
+      island.style.transform = 'translateX(-50%)';
+    }
+
+    // Auto-play once when the phone scrolls into view (≈ first app open)
+    const io = new IntersectionObserver((es) => {
+      es.forEach(e => {
+        if (e.isIntersecting && !shown) { shown = true; setTimeout(expand, 650 * speed()); }
+      });
+    }, { threshold: 0.55 });
+    io.observe(phone);
+
+    // tap the compact island to expand; (expanded handled by drag below)
+    island.addEventListener('click', () => { if (island.dataset.state === 'compact' && !dragMoved) expand(); });
+    island.addEventListener('keydown', e => {
+      if (e.key === ' ' || e.key === 'Enter') { e.preventDefault(); island.dataset.state === 'compact' ? expand() : collapse(); }
+    });
+
+    // swipe up to dismiss (only when expanded)
+    let dragging = false, startY = 0, startT = 0, dy = 0, dragMoved = false;
+    island.addEventListener('pointerdown', e => {
+      if (island.dataset.state !== 'expanded') return;
+      dragging = true; dragMoved = false; startY = e.clientY; startT = e.timeStamp; dy = 0;
+      clearTimeout(autoT);
+      island.classList.add('dragging');
+      island.setPointerCapture(e.pointerId);
+    });
+    island.addEventListener('pointermove', e => {
+      if (!dragging) return;
+      dy = Math.min(0, e.clientY - startY);        // up only
+      if (Math.abs(dy) > 3) dragMoved = true;
+      const fade = Math.max(0.3, 1 + dy / 160);
+      island.style.transform = `translateX(-50%) translateY(${dy}px)`;
+      island.style.opacity = String(fade);
+    });
+    function endDrag(e) {
+      if (!dragging) return;
+      dragging = false;
+      island.classList.remove('dragging');
+      island.style.opacity = '';
+      const v = Math.abs(dy) / Math.max(1, e.timeStamp - startT);
+      if (-dy > 44 || v > 0.4) { collapse(); }
+      else { island.style.transform = 'translateX(-50%)'; autoT = setTimeout(collapse, 8000 * speed()); }
+    }
+    island.addEventListener('pointerup', endDrag);
+    island.addEventListener('pointercancel', endDrag);
+
+    stage.querySelector('[data-seg="ci-speed"]').addEventListener('click', e => {
+      const b = e.target.closest('button'); if (!b) return;
+      stage.querySelectorAll('[data-seg="ci-speed"] button').forEach(x => x.classList.toggle('on', x === b));
+      phone.style.setProperty('--speed', b.dataset.speed);
+    });
+    stage.querySelector('[data-ci-replay]').addEventListener('click', () => {
+      collapse();
+      setTimeout(expand, 520 * speed());
+    });
   })();
 
   // ── Spec modal ──────────────────────────────
