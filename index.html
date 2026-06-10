@@ -1172,11 +1172,10 @@
   .ci-island[data-state="expanded"] .ci-bar-fill { width: 56px; }
 
   .ci-figure { position: absolute; right: 16px; top: 50%; transform: translateY(-50%); width: 142px; height: 142px; }
-  .ci-fig-ring { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: contain; }
-  .ci-fig-img { position: absolute; left: 50%; top: 50%; transform: translate(-50%, -50%); width: 104px; height: 104px; object-fit: contain; }
-  .ci-glow { position: absolute; left: 50%; top: 50%; transform: translate(-50%,-50%); width: 120px; height: 120px; border-radius: 50%;
-    background: url("assets/calibration/figure.png") center / 86% no-repeat;
-    filter: blur(11px) saturate(1.6) brightness(1.25); opacity: 0; }
+  .ci-fig-img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: contain; }
+  .ci-glow { position: absolute; left: 50%; top: 50%; transform: translate(-50%,-50%); width: 128px; height: 128px; border-radius: 50%;
+    background: url("assets/calibration/figure-ring.png") center / 92% no-repeat;
+    filter: blur(12px) saturate(1.5) brightness(1.3); opacity: 0; }
   .ci-island[data-state="expanded"] .ci-glow { animation: ciGlow calc(2.8s*var(--speed)) ease-in-out infinite; }
   @keyframes ciGlow {
     0%, 100% { opacity: 0.4; transform: translate(-50%,-50%) scale(1); }
@@ -1827,8 +1826,7 @@
             </div>
             <div class="ci-figure">
               <div class="ci-glow"></div>
-              <img class="ci-fig-img" src="assets/calibration/figure.png" alt="" />
-              <img class="ci-fig-ring" src="assets/calibration/ring-frame.png" alt="" />
+              <img class="ci-fig-img" src="assets/calibration/figure-ring.png" alt="" />
             </div>
           </div>
         </div>
