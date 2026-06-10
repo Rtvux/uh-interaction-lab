@@ -1,0 +1,2674 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+<title>UH · Interaction Lab</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet" />
+<style>
+  :root {
+    --bg: #fafafa;
+    --surface: #ffffff;
+    --stage: #f9f9f9;
+    --line: rgba(17,17,17,0.08);
+    --line-2: rgba(17,17,17,0.13);
+    --text: #15171a;
+    --muted: #6b7178;
+    --muted-2: #a2a8ae;
+    --accent: #12a05c;
+    --mono: "JetBrains Mono", ui-monospace, SFMono-Regular, Menlo, monospace;
+    --sans: "Inter", -apple-system, BlinkMacSystemFont, system-ui, sans-serif;
+    --ease-out: cubic-bezier(0.23, 1, 0.32, 1);
+  }
+  * { box-sizing: border-box; }
+  html { scroll-behavior: smooth; }
+  body {
+    margin: 0;
+    min-height: 100%;
+    background: var(--bg);
+    color: var(--text);
+    font-family: var(--sans);
+    -webkit-font-smoothing: antialiased;
+    text-rendering: optimizeLegibility;
+  }
+  a { color: inherit; }
+
+  /* ── Top bar ─────────────────────────────── */
+  .topbar {
+    position: sticky;
+    top: 0;
+    z-index: 50;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 20px 32px;
+    background: rgba(250,250,250,0.78);
+    backdrop-filter: blur(14px);
+    border-bottom: 1px solid var(--line);
+  }
+  .brand {
+    font-family: var(--mono);
+    font-size: 12px;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--muted-2);
+  }
+  .brand b { color: var(--text); font-weight: 600; }
+  .brand-r {
+    font-family: var(--mono);
+    font-size: 10.5px;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    color: var(--muted-2);
+  }
+
+  /* ── Feed ────────────────────────────────── */
+  .feed {
+    max-width: 1080px;
+    margin: 0 auto;
+    padding: 72px 32px 160px;
+    display: flex;
+    flex-direction: column;
+    gap: 64px;
+  }
+
+  /* ── Interaction ─────────────────────────── */
+  .ix { scroll-margin-top: 90px; }
+  .ix-head {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: 16px;
+    margin: 0 4px 20px;
+  }
+  .ix-title {
+    display: flex;
+    align-items: baseline;
+    gap: 14px;
+  }
+  .ix-num {
+    font-family: var(--mono);
+    font-size: 12px;
+    font-weight: 500;
+    letter-spacing: 0.1em;
+    color: var(--muted-2);
+  }
+  .ix-head h2 {
+    margin: 0;
+    font-size: 17px;
+    font-weight: 600;
+    letter-spacing: -0.01em;
+  }
+  .spec-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 7px;
+    background: transparent;
+    border: 1px solid var(--line-2);
+    border-radius: 999px;
+    color: var(--muted);
+    font-family: var(--mono);
+    font-size: 10.5px;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    padding: 7px 14px;
+    cursor: pointer;
+    transition: color .18s var(--ease-out), border-color .18s var(--ease-out), background .18s var(--ease-out), transform .14s var(--ease-out);
+  }
+  .spec-btn:hover { color: var(--text); border-color: var(--muted-2); background: rgba(17,17,17,0.02); }
+  .spec-btn:active { transform: scale(0.97); }
+  .spec-btn svg { width: 13px; height: 13px; }
+
+  /* ── Stage ───────────────────────────────── */
+  .ix-stage {
+    position: relative;
+    background: var(--stage);
+    border: 1px solid var(--line);
+    border-radius: 24px;
+    padding: 72px 32px 40px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 40px;
+    box-shadow: 0 1px 2px rgba(17,17,17,0.03), 0 12px 32px -20px rgba(17,17,17,0.12);
+    overflow-x: clip;   /* contain the fixed-width mock footprint when it's scaled to fit */
+  }
+  /* Fluidly scale the fixed-width device mockups so they fit any viewport.
+     Scaled via a wrapper so the mock's own transforms (press, FLIP) stay intact. */
+  .ix-fit {
+    --mw: 370px;
+    transform: scale(min(1, (100vw - 36px) / var(--mw)));
+    transform-origin: top center;
+  }
+  .stage-foot {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 18px;
+    max-width: 100%;
+  }
+
+  /* ── Responsive ──────────────────────────── */
+  @media (max-width: 760px) {
+    .feed { padding: 48px 16px 120px; gap: 48px; }
+    .intro { padding: 48px 16px 8px; }
+    .topbar { padding: 14px 16px; }
+    .intro h1 { font-size: 25px; }
+  }
+  @media (max-width: 560px) {
+    .ix-stage { padding: 44px 12px 28px; gap: 30px; border-radius: 20px; }
+    .ix-head { flex-wrap: wrap; gap: 10px; margin-bottom: 16px; }
+    .ix-head h2 { font-size: 16px; }
+    .modal { border-radius: 18px; }
+  }
+  .stage-hint {
+    font-family: var(--mono);
+    font-size: 10.5px;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--muted-2);
+  }
+  .stage-hint code { color: var(--muted); background: rgba(17,17,17,0.05); padding: 1px 6px; border-radius: 5px; }
+
+  /* Minimal controls */
+  .ctl { display: flex; flex-wrap: wrap; align-items: center; justify-content: center; gap: 14px; }
+  .ctl-group { display: flex; align-items: center; gap: 8px; }
+  .ctl-label {
+    font-family: var(--mono);
+    font-size: 9px;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--muted-2);
+  }
+  .seg {
+    display: inline-flex;
+    padding: 3px;
+    background: rgba(17,17,17,0.04);
+    border-radius: 999px;
+  }
+  .seg button {
+    background: transparent;
+    border: 0;
+    color: var(--muted);
+    font-family: var(--mono);
+    font-size: 10px;
+    letter-spacing: 0.05em;
+    padding: 6px 12px;
+    border-radius: 999px;
+    cursor: pointer;
+    text-transform: uppercase;
+    transition: color .16s var(--ease-out), background .16s var(--ease-out);
+  }
+  .seg button:hover { color: var(--text); }
+  .seg button.on { background: var(--surface); color: var(--text); box-shadow: 0 1px 2px rgba(17,17,17,0.08); }
+  .btn-ghost {
+    background: transparent;
+    border: 0;
+    color: var(--accent);
+    font-family: var(--mono);
+    font-size: 10px;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    padding: 6px 10px;
+    cursor: pointer;
+    border-radius: 999px;
+    transition: background .16s var(--ease-out), transform .14s var(--ease-out);
+  }
+  .btn-ghost:hover { background: rgba(18,160,92,0.08); }
+  .btn-ghost:active { transform: scale(0.96); }
+
+  /* ── Spec modal ──────────────────────────── */
+  .modal-backdrop {
+    position: fixed;
+    inset: 0;
+    z-index: 100;
+    background: rgba(17,17,17,0.28);
+    backdrop-filter: blur(3px);
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 200ms ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 24px;
+  }
+  .modal-backdrop.open { opacity: 1; pointer-events: auto; }
+  .modal {
+    width: min(560px, 100%);
+    max-height: 84vh;
+    overflow-y: auto;
+    background: var(--surface);
+    border-radius: 20px;
+    box-shadow: 0 24px 70px -24px rgba(17,17,17,0.4);
+    transform: scale(0.96);
+    opacity: 0;
+    transition: transform 220ms var(--ease-out), opacity 220ms var(--ease-out);
+  }
+  .modal-backdrop.open .modal { transform: scale(1); opacity: 1; }
+  .modal-head {
+    position: sticky;
+    top: 0;
+    background: var(--surface);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 22px 24px 16px;
+    border-bottom: 1px solid var(--line);
+  }
+  .modal-head h3 { margin: 0; font-size: 15px; font-weight: 600; }
+  .modal-head .sub { font-family: var(--mono); font-size: 10px; letter-spacing: 0.04em; color: var(--muted-2); margin-top: 4px; }
+  .modal-close {
+    width: 30px; height: 30px;
+    border-radius: 999px;
+    border: 1px solid var(--line-2);
+    background: transparent;
+    color: var(--muted);
+    cursor: pointer;
+    font-size: 16px;
+    line-height: 1;
+    display: grid;
+    place-items: center;
+    transition: background .16s var(--ease-out), color .16s var(--ease-out), transform .14s var(--ease-out);
+  }
+  .modal-close:hover { background: rgba(17,17,17,0.04); color: var(--text); }
+  .modal-close:active { transform: scale(0.94); }
+  .modal-body { padding: 8px 24px 20px; }
+
+  /* Accordions */
+  .acc { border-bottom: 1px solid var(--line); }
+  .acc:last-child { border-bottom: 0; }
+  .acc-head {
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    background: transparent;
+    border: 0;
+    cursor: pointer;
+    padding: 16px 2px;
+    text-align: left;
+    font-family: var(--mono);
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 0.07em;
+    text-transform: uppercase;
+    color: var(--text);
+  }
+  .acc-head .chev {
+    width: 16px; height: 16px;
+    flex: none;
+    color: var(--muted-2);
+    transition: transform 240ms var(--ease-out);
+  }
+  .acc.open .acc-head .chev { transform: rotate(90deg); }
+  .acc-body {
+    display: grid;
+    grid-template-rows: 0fr;
+    transition: grid-template-rows 280ms var(--ease-out);
+  }
+  .acc.open .acc-body { grid-template-rows: 1fr; }
+  .acc-body > .acc-inner { overflow: hidden; }
+  .spec { font-family: var(--mono); font-size: 11px; line-height: 1.6; color: var(--muted); padding-bottom: 6px; }
+  .spec .sp { padding: 9px 0; border-bottom: 1px solid var(--line); }
+  .spec .sp:last-child { border-bottom: 0; }
+  .spec .sp-t { color: var(--text); }
+  .spec .sp-v { color: var(--accent); display: inline-block; }
+  .spec .sp-p { color: var(--muted-2); font-size: 10px; margin-top: 3px; line-height: 1.5; }
+
+  @media (prefers-reduced-motion: reduce) {
+    .modal { transition: opacity 150ms ease; transform: none; }
+    .modal-backdrop.open .modal { transform: none; }
+    .acc-body { transition: none; }
+  }
+
+  /* ══════════════════════════════════════════
+     COMPONENT · Bio Intelligence (interaction 02)
+     1:1 with Figma · Phoenix workspace · node 494-1132
+     States: empty (no insight) · collapsed · expanded (carousel)
+     Sans/body text is TWK Everett in production; Inter fallback here.
+     ══════════════════════════════════════════ */
+  .bi-card {
+    --speed: 1;
+    --bi-ease: cubic-bezier(0.32, 0.72, 0, 1);   /* iOS drawer curve */
+    --bi-out: cubic-bezier(0.23, 1, 0.32, 1);
+    --bi-teal: #396860;
+    position: relative;
+    width: 370px;
+    padding: 8px;
+    border-radius: 12px;
+    background: rgba(255,255,255,0.7);
+    box-shadow: 0 0 25px 0 rgba(0,0,0,0.05);
+    user-select: none;
+    -webkit-tap-highlight-color: transparent;
+    transition: border-radius calc(360ms * var(--speed)) var(--bi-ease);
+  }
+  .bi-card[data-state="expanded"] { border-radius: 14px; }
+  .bi-card::after {
+    content: ""; position: absolute; inset: 0; border-radius: inherit;
+    box-shadow: inset 0 2px 1px 0 #fff; pointer-events: none;
+  }
+
+  .bi-panel {
+    position: relative;
+    width: 100%;
+    background: #f5f5f5;
+    border-radius: 8px;
+    height: 45.25px;
+    overflow: hidden;
+    transition: height calc(420ms * var(--speed)) var(--bi-ease),
+                border-radius calc(360ms * var(--speed)) var(--bi-ease);
+  }
+  .bi-card[data-state="collapsed"] .bi-panel { height: 118.75px; }
+  .bi-card[data-state="expanded"]  .bi-panel { height: 338.63px; border-radius: 10px; }
+
+  /* Persistent header — present in collapsed + expanded, fixed position (no jump) */
+  .bi-header {
+    position: absolute; left: 12px; right: 12px; top: 12px;
+    height: 18px; z-index: 2;
+    display: flex; align-items: center; justify-content: space-between;
+    cursor: pointer;
+    opacity: 1;
+    transition: opacity calc(220ms * var(--speed)) var(--bi-out) calc(80ms * var(--speed));
+  }
+  .bi-card[data-state="empty"] .bi-header { opacity: 0; pointer-events: none; transition-delay: 0ms; }
+  .bi-brand { display: flex; align-items: center; gap: 8px; }
+  .bi-brand .bi-logo { width: 16px; height: 15.36px; flex: none; }
+  .bi-brand .bi-name {
+    font-family: var(--mono); font-weight: 500; font-size: 12px; line-height: 16px;
+    text-transform: uppercase; color: rgba(0,0,0,0.7); white-space: nowrap;
+  }
+  .bi-brand .bi-meta {
+    font-family: var(--mono); font-weight: 400; font-size: 12px; line-height: 18px;
+    letter-spacing: 1px; text-transform: uppercase; color: rgba(0,0,0,0.5); white-space: nowrap;
+  }
+  .bi-arrow { position: relative; width: 16px; height: 16px; flex: none; }
+  .bi-arrow img { position: absolute; inset: 0; width: 100%; height: 100%; transition: opacity calc(200ms * var(--speed)) var(--bi-out); }
+  .bi-card[data-state="expanded"] .bi-arrow .a-expand { opacity: 0; }
+  .bi-card:not([data-state="expanded"]) .bi-arrow .a-collapse { opacity: 0; }
+
+  /* Layers crossfade */
+  .bi-layer {
+    position: absolute; left: 12px; right: 12px;
+    opacity: 0; pointer-events: none; transform: translateY(6px);
+    transition: opacity calc(150ms * var(--speed)) var(--bi-out),
+                transform calc(150ms * var(--speed)) var(--bi-out);
+  }
+  .bi-empty     { top: 12px; }
+  .bi-collapsed { top: 50px; }
+  .bi-expanded  { top: 36px; }
+  .bi-card[data-state="empty"]     .bi-empty,
+  .bi-card[data-state="collapsed"] .bi-collapsed,
+  .bi-card[data-state="expanded"]  .bi-expanded {
+    opacity: 1; transform: translateY(0); pointer-events: auto;
+    transition: opacity calc(240ms * var(--speed)) var(--bi-out) calc(130ms * var(--speed)),
+                transform calc(240ms * var(--speed)) var(--bi-out) calc(130ms * var(--speed));
+  }
+
+  /* Empty — rotating ghost question */
+  .bi-q {
+    font-family: var(--sans); font-style: italic; font-weight: 400;
+    font-size: 13px; line-height: 18px; color: #8a8a93; text-align: center;
+    transition: opacity calc(260ms * var(--speed)) ease;
+  }
+  .bi-q.flash { opacity: 0; }
+
+  /* Collapsed — two insight rows */
+  .bi-insights { display: flex; flex-direction: column; gap: 12px; }
+  .bi-insight { display: flex; align-items: center; gap: 10px; }
+  .bi-card[data-state="collapsed"] .bi-insight {
+    animation: biRise calc(280ms * var(--speed)) var(--bi-out) backwards;
+  }
+  .bi-card[data-state="collapsed"] .bi-insight:nth-child(1) { animation-delay: calc(150ms * var(--speed)); }
+  .bi-card[data-state="collapsed"] .bi-insight:nth-child(2) { animation-delay: calc(195ms * var(--speed)); }
+  @keyframes biRise { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: translateY(0); } }
+  .bi-insight .bi-iarrow { width: 16px; height: 16px; flex: none; }
+  .bi-insight .bi-itext { font-family: var(--sans); font-weight: 400; font-size: 14px; line-height: 20px; color: #171717; }
+  .bi-insight .bi-trend { font-family: var(--mono); font-weight: 700; font-size: 12px; line-height: 20px; letter-spacing: 1px; text-transform: uppercase; color: var(--bi-teal); }
+
+  /* Expanded — carousel */
+  .bi-exp-inner { padding-top: 8px; display: flex; flex-direction: column; gap: 12px; }
+  .bi-carousel { position: relative; width: 100%; height: 234.63px; overflow: hidden; touch-action: pan-y; cursor: grab; }
+  .bi-carousel:active { cursor: grabbing; }
+  .bi-track { display: flex; gap: 12px; height: 100%; will-change: transform; }
+  .bi-slide { flex: 0 0 318px; width: 318px; }
+  .bi-slide-card {
+    position: relative; height: 100%; min-height: 160px;
+    background: #f5f5f5; border-radius: 18px; padding: 12px;
+    display: flex; flex-direction: column; gap: 8px;
+  }
+  .bi-slide-head { display: flex; align-items: flex-start; justify-content: space-between; }
+  .bi-slide-left { display: flex; align-items: center; gap: 10px; }
+  .bi-avatar {
+    width: 40px; height: 40px; border-radius: 12px; flex: none;
+    background: #e2e2e2; border: 1px solid #fff;
+    display: grid; place-items: center;
+    box-shadow: 0 0 0 0.5px rgba(107,114,128,0.5);
+  }
+  .bi-avatar img { width: 16px; height: 16px; }
+  .bi-slide-cat { font-family: var(--mono); font-weight: 500; font-size: 12px; line-height: 16px; text-transform: uppercase; color: var(--bi-teal); }
+  .bi-slide-title { font-family: var(--sans); font-weight: 500; font-size: 14px; line-height: 20px; color: #171717; }
+  .bi-actions { display: flex; gap: 6px; }
+  .bi-act { width: 32px; height: 32px; border-radius: 9999px; flex: none; display: grid; place-items: center; background: transparent; cursor: pointer; transition: transform calc(140ms*var(--speed)) var(--bi-out); }
+  .bi-act:active { transform: scale(0.92); }
+  .bi-act img { width: 12px; height: 12px; }
+  .bi-act-bm { border: 1px solid rgba(0,0,0,0.15); }
+  .bi-act-ck { background: rgba(57,104,96,0.1); border: 1px solid rgba(57,104,96,0.2); }
+  .bi-slide-body { font-family: var(--sans); font-weight: 400; font-size: 13px; line-height: 21.13px; color: #171717; }
+  .bi-slide-body b { font-weight: 700; color: #000; }
+  .bi-slide-body em { font-style: normal; font-weight: 500; }
+  .bi-score {
+    position: absolute; right: 11.41px; bottom: 12px;
+    display: flex; align-items: center; gap: 6px;
+    padding: 5px 9px; border: 1px solid rgba(57,104,96,0.2); border-radius: 9999px;
+    background: #f5f5f5;
+  }
+  .bi-score img { width: 12px; height: 12px; }
+  .bi-score span { font-family: var(--mono); font-weight: 500; font-size: 12px; line-height: 16px; color: var(--bi-teal); }
+
+  .bi-exp-controls { display: flex; align-items: center; justify-content: space-between; height: 36px; }
+  .bi-saved { width: 36px; height: 36px; border-radius: 14px; background: #fff; border: 1px solid #eee; display: grid; place-items: center; cursor: pointer; transition: transform calc(140ms*var(--speed)) var(--bi-out); }
+  .bi-saved:active { transform: scale(0.94); }
+  .bi-saved img { width: 16px; height: 16px; }
+  .bi-dots { display: flex; align-items: center; gap: 4px; }
+  .bi-dot { width: 6px; height: 6px; border-radius: 3px; background: rgba(0,0,0,0.4); border: 0; padding: 0; cursor: pointer; transition: width calc(280ms*var(--speed)) var(--bi-out), background calc(280ms*var(--speed)) var(--bi-out); }
+  .bi-dot.on { width: 12px; background: #000; }
+
+  /* Chat with Jade — persistent footer button */
+  .bi-chat { display: flex; align-items: center; justify-content: center; gap: 6px; padding: 4px 0; cursor: pointer; transition: transform calc(140ms*var(--speed)) var(--bi-out); }
+  .bi-chat:active { transform: scale(0.98); }
+  .bi-chat img { width: 28px; height: 28px; }
+  .bi-chat span { font-family: var(--mono); font-weight: 700; font-size: 12px; line-height: 18px; letter-spacing: 1px; text-transform: uppercase; color: var(--bi-teal); }
+
+  @media (prefers-reduced-motion: reduce) {
+    .bi-panel { transition: height 150ms ease; }
+    .bi-layer { transition: opacity 150ms ease; transform: none; }
+    .bi-card[data-state] .bi-layer { transform: none; }
+    .bi-insight { animation: none !important; }
+    .bi-q { transition: opacity 150ms ease; }
+    .bi-q.flash { opacity: 0; }
+    .bi-track { transition: none; }
+  }
+
+  /* ══════════════════════════════════════════
+     COMPONENT · Live Pill (interaction 01)
+     1:1 with Figma · Phoenix workspace · node 485-1264
+     Self-contained — its own internal colors (do not theme).
+     ══════════════════════════════════════════ */
+  .lp-card {
+    --speed: 1;
+    --lp-ease-card: cubic-bezier(0.32, 0.72, 0, 1);  /* iOS drawer curve */
+    --lp-ease-out: cubic-bezier(0.23, 1, 0.32, 1);
+    --lp-dur-card: calc(360ms * var(--speed));
+    position: relative;
+    width: 370px;
+    height: 48px;
+    border-radius: 12px;
+    overflow: hidden;
+    cursor: pointer;
+    user-select: none;
+    -webkit-tap-highlight-color: transparent;
+    background: #000;
+    box-shadow: 0 0 25px 0 rgba(0,0,0,0);
+    transition:
+      height var(--lp-dur-card) var(--lp-ease-card),
+      transform calc(160ms * var(--speed)) var(--lp-ease-out),
+      background-color calc(500ms * var(--speed)) ease,
+      box-shadow calc(500ms * var(--speed)) ease;
+  }
+  .lp-card[data-state="expanded"] { --lp-dur-card: calc(420ms * var(--speed)); }
+  .lp-card[data-state="expanded"][data-mode="live"]  { height: 153px; }
+  .lp-card[data-state="expanded"][data-mode="stale"] { height: 154px; }
+  .lp-card[data-mode="stale"] {
+    background: #fafafa;
+    box-shadow: 0 0 25px 0 rgba(0,0,0,0.05);
+  }
+  .lp-card.pressed { transform: scale(0.98); }
+  .lp-card:focus-visible { outline: 2px solid rgba(18,160,92,0.6); outline-offset: 3px; }
+
+  .lp-bg {
+    position: absolute;
+    inset: 0;
+    background-size: 100% 100%;
+    background-repeat: no-repeat;
+    pointer-events: none;
+    transition: opacity var(--lp-dur-card) ease;
+  }
+  .lp-bg-live-collapsed { background-image: url("assets/live-pill/bg-collapsed-live.png"); opacity: 1; }
+  .lp-bg-live-expanded  { background-image: url("assets/live-pill/bg-expanded-live.png"); opacity: 0; }
+  .lp-card[data-state="expanded"] .lp-bg-live-collapsed { opacity: 0; }
+  .lp-card[data-state="expanded"] .lp-bg-live-expanded  { opacity: 1; }
+  .lp-bg-stale {
+    background: #fafafa;
+    opacity: 0;
+    transition: opacity calc(500ms * var(--speed)) ease;
+  }
+  .lp-card[data-mode="stale"] .lp-bg-stale { opacity: 1; }
+
+  .lp-swap { position: relative; display: block; }
+  .lp-swap > * { transition: opacity calc(300ms * var(--speed)) ease, filter calc(300ms * var(--speed)) ease; }
+  .lp-swap > .when-stale { position: absolute; top: 50%; left: 0; transform: translateY(-50%); }
+  .lp-card[data-mode="live"]  .lp-swap > .when-stale { opacity: 0; filter: blur(2px); }
+  .lp-card[data-mode="stale"] .lp-swap > .when-live  { opacity: 0; filter: blur(2px); }
+  .lp-ic.lp-swap > img { position: absolute; inset: 0; width: 100%; height: 100%; display: block; }
+  .lp-ic.lp-swap > img.when-stale { transform: none; top: 0; }
+
+  .lp-collapsed {
+    position: absolute;
+    left: 19.39px; right: 19.76px; top: 15.66px;
+    height: 16.64px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    opacity: 1;
+    filter: blur(0);
+    transition:
+      opacity calc(180ms * var(--speed)) var(--lp-ease-out) calc(80ms * var(--speed)),
+      filter  calc(180ms * var(--speed)) var(--lp-ease-out) calc(80ms * var(--speed)),
+      left 400ms ease, right 400ms ease, top 400ms ease;
+  }
+  .lp-card[data-mode="stale"] .lp-collapsed { left: 16px; right: 16px; top: 16px; height: 17px; }
+  .lp-card[data-state="expanded"] .lp-collapsed {
+    opacity: 0;
+    filter: blur(2px);
+    pointer-events: none;
+    transition:
+      opacity calc(120ms * var(--speed)) var(--lp-ease-out),
+      filter  calc(120ms * var(--speed)) var(--lp-ease-out),
+      left 400ms ease, right 400ms ease, top 400ms ease;
+  }
+
+  .lp-badge {
+    display: flex; align-items: center; gap: 3.682px;
+    font-family: var(--mono); font-weight: 500;
+    font-size: 10.767px; line-height: 15.661px; letter-spacing: 0.3915px;
+    text-transform: uppercase; color: #fff; white-space: nowrap;
+  }
+  .lp-dot { width: 5.522px; height: 5.522px; border-radius: 50%; background: #00FFC0; flex: none; transform-origin: center; }
+
+  /* Persistent status — anchored; does not move on expand/collapse */
+  .lp-status {
+    position: absolute;
+    top: 16px;
+    left: 19.39px;
+    z-index: 3;
+    pointer-events: none;
+  }
+  .lp-card[data-mode="stale"] .lp-status { left: 16px; }
+  .lp-ghost { visibility: hidden; }
+
+  /* Breathing live dot (live mode only) */
+  @keyframes lpBreath {
+    0%, 100% { transform: scale(0.82); opacity: 0.5;  box-shadow: 0 0 0 0 rgba(0,255,192,0); }
+    50%      { transform: scale(1.12); opacity: 1;    box-shadow: 0 0 6px 1px rgba(0,255,192,0.45); }
+  }
+  .lp-card[data-mode="live"] .lp-status .lp-dot {
+    animation: lpBreath 2.6s ease-in-out infinite;
+  }
+
+  /* Live value morph — blur out, swap, blur back in */
+  .lp-num {
+    display: inline-block;
+    transition: filter calc(220ms * var(--speed)) ease, opacity calc(220ms * var(--speed)) ease;
+  }
+  .lp-num.flash { filter: blur(3px); opacity: 0.35; }
+  .lp-time {
+    font-family: var(--mono); font-weight: 500;
+    font-size: 11px; line-height: 16px; letter-spacing: 0.4px;
+    text-transform: uppercase; color: #52525b; white-space: nowrap;
+  }
+
+  .lp-inline { display: flex; align-items: center; gap: 7.831px; }
+  .lp-card[data-mode="stale"] .lp-inline { gap: 8px; }
+  .lp-im { display: flex; align-items: center; gap: 3.915px; }
+  .lp-card[data-mode="stale"] .lp-im { gap: 4px; }
+  .lp-im .lp-ic { width: 13.704px; height: 13.704px; flex: none; }
+  .lp-im .lp-ic-brain { width: 15.661px; }
+  .lp-card[data-mode="stale"] .lp-im .lp-ic { width: 14px; height: 14px; }
+  .lp-card[data-mode="stale"] .lp-im .lp-ic-brain { width: 16px; }
+  .lp-iv {
+    font-family: var(--mono); font-weight: 500;
+    font-size: 11.746px; line-height: 15.661px; letter-spacing: 0.3915px;
+    text-transform: uppercase; color: #fff; white-space: nowrap;
+    transition: color calc(400ms * var(--speed)) ease;
+  }
+  .lp-card[data-mode="stale"] .lp-iv { font-size: 12px; line-height: 16px; letter-spacing: 0.4px; color: #0f0f0f; }
+  .lp-div {
+    width: 1px; height: 9.943px; border-radius: 99px;
+    background: rgba(212,212,216,0.3); flex: none;
+    transition: background calc(400ms * var(--speed)) ease;
+  }
+  .lp-card[data-mode="stale"] .lp-div { height: 10.158px; background: rgba(0,0,0,0.06); }
+  .lp-arrow { width: 10.977px; height: 10.82px; flex: none; }
+
+  .lp-expanded { position: absolute; inset: 0; pointer-events: none; }
+  .lp-exp-head {
+    position: absolute; left: 23.22px; top: 15.99px; width: 330.22px;
+    display: flex; align-items: center; justify-content: space-between;
+    opacity: 0;
+    transition: opacity calc(100ms * var(--speed)) var(--lp-ease-out);
+  }
+  .lp-card[data-state="expanded"] .lp-exp-head {
+    opacity: 1;
+    transition: opacity calc(200ms * var(--speed)) var(--lp-ease-out) calc(100ms * var(--speed));
+  }
+  .lp-badge-x {
+    display: flex; align-items: center; gap: 3.761px;
+    font-family: var(--mono); font-weight: 700;
+    font-size: 11.284px; line-height: 11.284px;
+    text-transform: uppercase; color: #fff; white-space: nowrap;
+  }
+  .lp-dot-x { width: 5.642px; height: 5.642px; }
+  .lp-arrow-x { width: 12.228px; height: 12.27px; flex: none; }
+
+  .lp-rows {
+    position: absolute; left: 50%; transform: translateX(-50%); top: 57.36px;
+    width: 332.866px; display: flex; flex-direction: column; gap: 12.224px;
+  }
+  .lp-row {
+    display: flex; align-items: center; justify-content: space-between;
+    opacity: 0; transform: translateY(8px);
+    transition:
+      opacity calc(100ms * var(--speed)) var(--lp-ease-out),
+      transform calc(100ms * var(--speed)) var(--lp-ease-out);
+  }
+  .lp-card[data-state="expanded"] .lp-row {
+    opacity: 1; transform: translateY(0);
+    transition:
+      opacity calc(260ms * var(--speed)) var(--lp-ease-out) var(--lp-d, calc(140ms * var(--speed))),
+      transform calc(260ms * var(--speed)) var(--lp-ease-out) var(--lp-d, calc(140ms * var(--speed)));
+  }
+  .lp-card[data-state="expanded"] .lp-row:nth-child(1) { --lp-d: calc(140ms * var(--speed)); }
+  .lp-card[data-state="expanded"] .lp-row:nth-child(2) { --lp-d: calc(185ms * var(--speed)); }
+  .lp-card[data-state="expanded"] .lp-row:nth-child(3) { --lp-d: calc(230ms * var(--speed)); }
+
+  .lp-row-l { display: flex; align-items: center; gap: 8px; width: 177.81px; }
+  .lp-row-l .lp-ic { width: 14px; height: 14px; flex: none; }
+  .lp-row-l .lp-ic-brain { width: 16px; }
+  .lp-label {
+    font-family: var(--mono); font-weight: 500;
+    font-size: 13px; line-height: 17px; letter-spacing: -0.4701px;
+    text-transform: uppercase; color: #fff; width: 85.567px;
+    transition: color calc(400ms * var(--speed)) ease;
+  }
+  .lp-card[data-mode="stale"] .lp-label { color: #0f0f0f; }
+  .lp-val {
+    font-family: var(--mono); font-weight: 500;
+    font-size: 13px; line-height: 17px; letter-spacing: -0.4701px;
+    color: #fff; white-space: nowrap;
+    transition: color calc(400ms * var(--speed)) ease;
+  }
+  .lp-val-steps { letter-spacing: 0.4px; line-height: 16px; text-transform: uppercase; }
+  .lp-card[data-mode="stale"] .lp-val { color: #171717; }
+
+  @media (prefers-reduced-motion: reduce) {
+    .lp-card { transition: height 150ms ease, background-color 150ms ease, box-shadow 150ms ease; }
+    .lp-card.pressed { transform: none; }
+    .lp-bg, .lp-collapsed, .lp-exp-head, .lp-swap > * { transition-duration: 150ms; }
+    .lp-card[data-state="expanded"] .lp-collapsed { filter: none; }
+    .lp-row { transform: none !important; transition: opacity 150ms ease; }
+    .lp-card[data-mode="live"] .lp-status .lp-dot { animation: none; }
+    .lp-num { transition: opacity 150ms ease; }
+    .lp-num.flash { filter: none; }
+  }
+
+  /* ══ Live Pill · V2 — liquid-metal active state (node 499-1194) ══
+     Light mint card, black ink, green dot; bg is a softly drifting
+     liquid-metal field (animated CSS gradients + the Figma screen texture). */
+  .lp-v2 { background: #deffe5; box-shadow: 0 0 25px 0 rgba(0,0,0,0.05); }
+  .lp-v2 .lp-liquid {
+    position: absolute; inset: 0; overflow: hidden; border-radius: inherit;
+    background: #deffe5; pointer-events: none;
+  }
+  /* The SVG carries the fractal liquid-metal texture; this just drifts it for parallax. */
+  .lp-v2 .lp-lm {
+    position: absolute; inset: -8%; width: 116%; height: 116%;
+    will-change: transform;
+    animation: lpLiquidDrift calc(40s * var(--speed)) ease-in-out infinite alternate;
+  }
+  @keyframes lpLiquidDrift {
+    0%   { transform: translate(-2%, -1.5%) scale(1.06) rotate(-1deg); }
+    100% { transform: translate(2%, 2%)     scale(1.12) rotate(1.5deg); }
+  }
+  /* V2 ink */
+  .lp-v2 .lp-badge, .lp-v2 .lp-iv, .lp-v2 .lp-label, .lp-v2 .lp-val, .lp-v2 .lp-badge-x { color: #0a0a0a; }
+  .lp-v2 .lp-ic img { filter: brightness(0); }
+  .lp-v2 .lp-div { background: rgba(0,0,0,0.16); }
+  .lp-v2 .lp-dot { background: #15b364; }
+  .lp-card[data-mode="live"].lp-v2 .lp-status .lp-dot { animation: lpBreathV2 calc(2.6s * var(--speed)) ease-in-out infinite; }
+  @keyframes lpBreathV2 {
+    0%, 100% { transform: scale(0.82); opacity: 0.55; box-shadow: 0 0 0 0 rgba(21,179,100,0); }
+    50%      { transform: scale(1.12); opacity: 1;    box-shadow: 0 0 6px 1px rgba(21,179,100,0.5); }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .lp-v2 .lp-lm { animation: none; }
+    .lp-card[data-mode="live"].lp-v2 .lp-status .lp-dot { animation: none; }
+  }
+
+  /* ══════════════════════════════════════════
+     COMPONENT · Activity Detection (interaction 04)
+     1:1 with Figma · Phoenix workspace · node 511-35785
+     Detected (pending) → delightful confirm → records into the list.
+     Three confirm styles: A · Stamp  B · Ripple  C · Glide.
+     ══════════════════════════════════════════ */
+  .ad-card {
+    --speed: 1;
+    --ad-ease: cubic-bezier(0.32, 0.72, 0, 1);
+    --ad-out: cubic-bezier(0.22, 1, 0.36, 1);
+    --ad-back: cubic-bezier(0.34, 1.56, 0.64, 1);   /* snappy overshoot */
+    --ad-spring: cubic-bezier(0.34, 1.32, 0.5, 1);  /* settle overshoot */
+    --ad-green: #16a34a;
+    position: relative;
+    width: 370px;
+    padding: 8px;
+    border-radius: 16px;
+    background: rgba(255,255,255,0.7);
+    box-shadow: 0 0 25px 0 rgba(0,0,0,0.05);
+    -webkit-tap-highlight-color: transparent;
+  }
+  .ad-card::after {
+    content: ""; position: absolute; inset: 0; border-radius: inherit;
+    box-shadow: inset 0 2px 1px 0 #fff; pointer-events: none;
+  }
+  .ad-head { display: flex; align-items: center; justify-content: space-between; padding: 6px 8px 10px; }
+  .ad-head h4 { margin: 0; font-family: var(--sans); font-weight: 600; font-size: 15px; color: #0f0f0f; }
+  .ad-head .ad-tot { display: inline-flex; align-items: center; gap: 6px; font-family: var(--mono); font-weight: 500; font-size: 12px; color: #0f0f0f; white-space: nowrap; }
+  .ad-head .ad-tot img { width: 13px; height: 13px; }
+  .ad-list { display: flex; flex-direction: column; gap: 6px; }
+  .ad-list:empty { display: none; }
+  .ad-recorded-list { margin-top: 6px; }
+
+  /* Item */
+  .ad-item {
+    position: relative; display: flex; align-items: center; gap: 8px;
+    padding: 8px; border-radius: 12px;
+    background: rgba(255,255,255,0.95);
+    box-shadow: 0 1px 15px 0 rgba(0,0,0,0.05);
+    border: 1px solid transparent;
+    will-change: transform;
+    transition: background 360ms var(--ad-out), box-shadow 360ms var(--ad-out), border-color 360ms var(--ad-out);
+  }
+  .ad-item.is-recorded {
+    background: transparent; box-shadow: none;
+    border-color: rgba(0,0,0,0.05);
+  }
+  .ad-ripple-clip { position: absolute; inset: 0; border-radius: 12px; overflow: hidden; pointer-events: none; }
+
+  .ad-icon { position: relative; width: 40px; height: 40px; border-radius: 8px; flex: none; display: grid; place-items: center; }
+  .ad-icon img { width: 18px; height: 18px; object-fit: contain; }
+  .ic-move  { background: #ffefe7; }
+  .ic-sleep { background: rgba(1,115,118,0.10); }
+  .ic-amber { background: rgba(241,160,0,0.10); }
+  .ad-icon { transition: background calc(360ms * var(--speed)) var(--ad-out); }
+  .ad-icon img { transition: filter calc(360ms * var(--speed)) var(--ad-out); }
+  /* Recorded (past) rows: neutral gray tile + dark icon (default).
+     The "Colored" toggle (data-recolor="keep") opts out, keeping the original tile + icon color. */
+  .ad-card[data-recolor="neutral"] .ad-item.is-recorded .ad-icon { background: #f4f4f5; }
+  .ad-card[data-recolor="neutral"] .ad-item.is-recorded .ad-icon img { filter: brightness(0) opacity(0.62); }
+
+  .ad-badge {
+    position: absolute; top: -5px; right: -5px;
+    width: 16px; height: 16px; border-radius: 50%;
+    background: var(--ad-green); border: 2px solid #f9f9f9;
+    display: grid; place-items: center;
+    transform: scale(0); opacity: 0;
+    transition: transform calc(260ms * var(--speed)) var(--ad-back), opacity calc(160ms * var(--speed)) ease;
+  }
+  .ad-badge svg { width: 9px; height: 9px; color: #fff; }
+  .ad-item.is-recorded .ad-badge { transform: scale(1); opacity: 1; }
+  .ad-item.just-recorded .ad-badge { animation: adBadgePop calc(520ms * var(--speed)) var(--ad-back) calc(120ms * var(--speed)) both; }
+  @keyframes adBadgePop {
+    0% { transform: scale(0) rotate(-35deg); opacity: 0; }
+    55% { transform: scale(1.28) rotate(8deg); opacity: 1; }
+    100% { transform: scale(1) rotate(0); opacity: 1; }
+  }
+
+  .ad-body { flex: 1 1 0; min-width: 0; display: flex; flex-direction: column; }
+  .ad-r1 { display: flex; align-items: center; gap: 4px; }
+  .ad-title { font-family: var(--sans); font-weight: 500; font-size: 14px; line-height: 20px; color: #0f0f0f; white-space: nowrap; }
+  .ad-q { display: inline-block; transition: opacity calc(220ms * var(--speed)) var(--ad-out), max-width calc(260ms * var(--speed)) var(--ad-out), filter calc(220ms * var(--speed)) var(--ad-out); max-width: 1ch; }
+  .ad-item.is-recorded .ad-q { opacity: 0; max-width: 0; filter: blur(2px); }
+  .ad-sep { color: rgba(23,23,23,0.3); font-size: 12px; }
+  .ad-pts { display: inline-flex; align-items: center; gap: 2px; font-family: var(--mono); font-weight: 500; font-size: 12px; color: #000; }
+  .ad-pts img { width: 12px; height: 12px; }
+  .ad-meta { font-family: var(--mono); font-weight: 500; font-size: 11px; line-height: 16px; letter-spacing: 0.4px; color: #a1a1aa; white-space: nowrap; }
+
+  /* Actions — confirm/dismiss live in a fixed-width slot so swapping to chevron doesn't shift layout */
+  .ad-tail { position: relative; flex: none; width: 72px; height: 32px; }
+  .ad-actions { position: absolute; inset: 0; display: flex; align-items: center; justify-content: flex-end; gap: 8px; transition: opacity calc(220ms * var(--speed)) var(--ad-out); }
+  .ad-item.is-recorded .ad-actions { opacity: 0; pointer-events: none; }
+  .ad-btn {
+    position: relative; width: 32px; height: 32px; border-radius: 9999px; flex: none;
+    display: grid; place-items: center; cursor: pointer; background: transparent;
+    transition: transform calc(150ms * var(--speed)) var(--ad-out), background calc(220ms * var(--speed)) ease, border-color calc(220ms * var(--speed)) ease, opacity calc(180ms * var(--speed)) var(--ad-out);
+  }
+  .ad-btn:active { transform: scale(0.92); }
+  .ad-btn img { width: 12px; height: 12px; }
+  .ad-x { border: 1px solid #d4d4d8; }
+  .ad-x:hover { background: rgba(0,0,0,0.03); }
+  .ad-check { border: 1px solid #86efac; background: #e5fbef; color: #1e9a55; box-shadow: 0 4px 5px rgba(0,0,0,0.1); }
+  .ad-cmark { width: 14px; height: 14px; }
+  .ad-cmark path { stroke: currentColor; stroke-width: 2.6; fill: none; stroke-linecap: round; stroke-linejoin: round; stroke-dasharray: 26; stroke-dashoffset: 0; }
+
+  .ad-chevron { position: absolute; inset: 0; display: flex; align-items: center; justify-content: flex-end; color: #c4c4c4;
+    opacity: 0; transform: translateX(6px); pointer-events: none;
+    transition: opacity calc(240ms * var(--speed)) var(--ad-out) calc(160ms * var(--speed)), transform calc(240ms * var(--speed)) var(--ad-out) calc(160ms * var(--speed)); }
+  .ad-chevron img { width: 18px; height: 18px; opacity: 0.5; transform: rotate(-90deg); }
+  .ad-item.is-recorded .ad-chevron { opacity: 1; transform: translateX(0); }
+
+  /* B · ripple wash overlay (clip-path circle from the check button) */
+  .ad-ripple { position: absolute; inset: 0; border-radius: 12px; pointer-events: none; opacity: 0;
+    background: radial-gradient(circle at 88% 50%, rgba(22,163,74,0.20), rgba(22,163,74,0.06) 60%, transparent 72%); }
+
+  /* Show more / less — folded rows collapse via grid-rows */
+  .ad-fold { display: grid; grid-template-rows: 0fr; transition: grid-template-rows calc(460ms * var(--speed)) var(--ad-ease); }
+  .ad-fold[data-open="true"] { grid-template-rows: 1fr; }
+  .ad-fold-inner { overflow: hidden; min-height: 0; display: flex; flex-direction: column; gap: 6px; }
+  .ad-fold[data-open="true"] .ad-fold-inner { padding-top: 6px; }
+  .ad-fold .ad-item { transition: opacity calc(280ms * var(--speed)) var(--ad-out), transform calc(280ms * var(--speed)) var(--ad-out); }
+  .ad-fold:not([data-open="true"]) .ad-item { opacity: 0; transform: translateY(-4px); }
+  .ad-fold[data-open="true"] .ad-fold-inner > .ad-item:nth-child(1) { transition-delay: 60ms; }
+  .ad-fold[data-open="true"] .ad-fold-inner > .ad-item:nth-child(2) { transition-delay: 105ms; }
+  .ad-fold[data-open="true"] .ad-fold-inner > .ad-item:nth-child(3) { transition-delay: 150ms; }
+  .ad-fold[data-open="true"] .ad-fold-inner > .ad-item:nth-child(4) { transition-delay: 195ms; }
+
+  .ad-toggle { display: flex; align-items: center; justify-content: center; gap: 4px; width: 100%; padding: 11px 0 4px; background: transparent; border: 0; cursor: pointer; font-family: var(--mono); font-weight: 500; font-size: 13px; letter-spacing: 0.5px; color: #171717; text-transform: uppercase; transition: transform 140ms var(--ad-out); }
+  .ad-toggle:active { transform: scale(0.98); }
+  .ad-toggle img { width: 18px; height: 18px; opacity: 0.7; transition: transform calc(320ms * var(--speed)) var(--ad-ease); }
+  .ad-card[data-expanded="true"] .ad-toggle img { transform: rotate(180deg); }
+
+  /* ── Confirm choreography (no artificial loader — snappy + delightful) ── */
+  /* shared: dismiss the ✗ as the ✓ takes over */
+  .ad-item.is-confirming .ad-x { transform: scale(0.4); opacity: 0; pointer-events: none; }
+  .ad-item.is-confirming { pointer-events: none; }
+
+  /* A · Stamp — spring pop + drawn check */
+  .ad-card[data-style="A"] .ad-item.is-confirming .ad-check { background: var(--ad-green); border-color: var(--ad-green); color: #fff; box-shadow: 0 6px 14px -4px rgba(22,163,74,0.5); animation: adStamp calc(420ms * var(--speed)) var(--ad-back); }
+  .ad-card[data-style="A"] .ad-item.is-confirming .ad-cmark path { animation: adDraw calc(300ms * var(--speed)) var(--ad-out) calc(70ms * var(--speed)) both; }
+  @keyframes adStamp { 0%{transform:scale(0.8);} 50%{transform:scale(1.14);} 100%{transform:scale(1);} }
+  @keyframes adDraw { from{stroke-dashoffset:26;} to{stroke-dashoffset:0;} }
+
+  /* B · Ripple — green wash sweeps the row via clip-path, check confirms */
+  .ad-card[data-style="B"] .ad-item.is-confirming .ad-check { background: var(--ad-green); border-color: var(--ad-green); color: #fff; }
+  .ad-card[data-style="B"] .ad-item.is-confirming .ad-cmark path { animation: adDraw calc(280ms * var(--speed)) var(--ad-out) both; }
+  .ad-card[data-style="B"] .ad-item.is-confirming .ad-ripple { animation: adRipple calc(560ms * var(--speed)) var(--ad-out); }
+  @keyframes adRipple {
+    0%   { opacity: 1; clip-path: circle(0% at 88% 50%); }
+    70%  { opacity: 1; }
+    100% { opacity: 0; clip-path: circle(135% at 88% 50%); }
+  }
+
+  /* C · Glide — row lifts on a spring, then the move down completes it */
+  .ad-card[data-style="C"] .ad-item.is-confirming {
+    transform: translateY(-6px) scale(1.03);
+    box-shadow: 0 16px 34px -12px rgba(0,0,0,0.32);
+    transition: transform calc(260ms * var(--speed)) var(--ad-back), box-shadow calc(260ms * var(--speed)) var(--ad-out);
+    z-index: 5;
+  }
+  .ad-card[data-style="C"] .ad-item.is-confirming .ad-check { background: var(--ad-green); border-color: var(--ad-green); color: #fff; box-shadow: 0 6px 14px -4px rgba(22,163,74,0.5); animation: adStamp calc(380ms * var(--speed)) var(--ad-back); }
+  .ad-card[data-style="C"] .ad-item.is-confirming .ad-cmark path { animation: adDraw calc(300ms * var(--speed)) var(--ad-out) calc(60ms * var(--speed)) both; }
+
+  /* dismiss (cross) */
+  .ad-item.is-dismissing {
+    transition: opacity calc(220ms*var(--speed)) var(--ad-out), transform calc(280ms*var(--speed)) var(--ad-out), filter calc(220ms*var(--speed)) var(--ad-out);
+    opacity: 0; transform: translateX(28px) scale(0.9); filter: blur(3px); pointer-events: none;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .ad-item, .ad-badge, .ad-actions, .ad-chevron, .ad-check, .ad-x { transition-duration: 120ms !important; animation: none !important; }
+    .ad-cmark path { stroke-dashoffset: 0 !important; }
+    .ad-item.just-recorded .ad-badge { animation: none; }
+    .ad-ripple { display: none; }
+  }
+
+  /* ══════════════════════════════════════════
+     COMPONENT · Battery Low Notification (interaction 05)
+     1:1 with Figma · Phoenix workspace · node 517-1134
+     Card drops in → ring ripples ~4s then calms → dismiss collapses
+     to a coin and flies into the hamburger menu.
+     ══════════════════════════════════════════ */
+  .bat-screen {
+    --speed: 1;
+    --ease: cubic-bezier(0.32, 0.72, 0, 1);
+    --out: cubic-bezier(0.22, 1, 0.36, 1);
+    --back: cubic-bezier(0.34, 1.56, 0.64, 1);
+    position: relative;
+    width: 402px;
+    padding: 14px 16px 64px;
+    background: #fafafa;
+    border-radius: 28px;
+    border: 1px solid rgba(0,0,0,0.06);
+    box-shadow: 0 1px 2px rgba(0,0,0,0.03), 0 18px 44px -26px rgba(0,0,0,0.18);
+    overflow: hidden;
+  }
+  .bat-statusbar { display: flex; align-items: center; justify-content: space-between; padding: 2px 12px 18px; }
+  .bat-statusbar .t { font-family: var(--sans); font-weight: 600; font-size: 15px; color: #0a0a0a; letter-spacing: -0.2px; }
+  .bat-statusbar .icons { display: flex; align-items: center; gap: 6px; color: #0a0a0a; }
+  .bat-statusbar .icons svg { display: block; }
+
+  .bat-topbar { display: flex; align-items: center; justify-content: space-between; padding: 0 2px; }
+  .bat-hamb {
+    position: relative; width: 40px; height: 40px; border-radius: 20px; flex: none;
+    background: #fff; border: 0.5px solid rgba(0,0,0,0.4);
+    box-shadow: 0 1px 25px rgba(0,0,0,0.05), inset 0 1px 1px #fff;
+    display: grid; place-items: center; cursor: pointer;
+    transition: transform 160ms var(--out);
+  }
+  .bat-hamb:active { transform: scale(0.95); }
+  .bat-hamb img { width: 16px; height: 10px; }
+  .bat-hamb .bat-dot { position: absolute; top: 1px; right: 4px; width: 8px; height: 8px; border-radius: 50%; background: #ff3b30; border: 1.5px solid #fafafa; }
+  .bat-hamb.receiving { animation: batHambPop calc(460ms*var(--speed)) var(--back); }
+  .bat-hamb.receiving .bat-dot { animation: batDotPulse calc(560ms*var(--speed)) var(--out); }
+  @keyframes batHambPop { 0%{transform:scale(1);} 40%{transform:scale(1.18);} 100%{transform:scale(1);} }
+  @keyframes batDotPulse { 0%{transform:scale(1);} 45%{transform:scale(1.7);} 100%{transform:scale(1);} }
+
+  .bat-wordmark { display: flex; align-items: center; gap: 8px; }
+  .bat-wordmark b { font-family: var(--sans); font-weight: 800; font-style: italic; font-size: 17px; letter-spacing: 0.5px; color: #0a0a0a; }
+  .bat-wordmark .chev { width: 16px; height: 16px; color: #0a0a0a; opacity: 0.85; }
+  .bat-today {
+    display: flex; align-items: center; gap: 8px; padding: 6px 10px; border-radius: 20px;
+    background: rgba(241,240,240,0.7); border: 0.5px solid rgba(0,0,0,0.4);
+    box-shadow: 0 1px 25px rgba(0,0,0,0.05), inset 0 1px 1px #fff;
+    font-family: var(--sans); font-weight: 700; font-size: 12px; color: #0a0a0a;
+  }
+  .bat-today .a { color: #0a0a0a; opacity: 0.55; font-size: 10px; }
+
+  .bat-slot { min-height: 120px; padding-top: 26px; display: flex; justify-content: flex-start; }
+
+  /* ── The notification card ── */
+  .bat-card {
+    --bat-c: #FFBD3C;
+    position: relative; width: 370px; height: 48px; flex: none;
+    border-radius: 26px;
+    background: radial-gradient(150% 260% at 88% 50%, #303030 0%, #211818 50%, #190c0c 75%, #110000 100%);
+    box-shadow: 0 10px 30px -12px rgba(0,0,0,0.5);
+    will-change: transform, width, opacity;
+  }
+  .bat-card[data-variant="red"] { --bat-c: #FE4145; }
+
+  .bat-msg { position: absolute; left: 60.33px; top: calc(50% - 1px); transform: translateY(-50%); width: 216px; transition: opacity calc(130ms*var(--speed)) var(--out); }
+  .bat-h { font-family: var(--sans); font-weight: 400; font-size: 14px; line-height: 20px; color: #fff; white-space: nowrap; }
+  .bat-sub { font-family: var(--sans); font-weight: 400; font-size: 11px; line-height: 16px; letter-spacing: 0.4px; color: #d4d4d8; white-space: nowrap; }
+  .bat-x {
+    position: absolute; left: 334px; top: 13px; width: 22px; height: 22px;
+    display: grid; place-items: center; background: transparent; border: 0; cursor: pointer; padding: 0;
+    transition: transform 140ms var(--out), opacity calc(180ms*var(--speed)) var(--out);
+  }
+  .bat-x:active { transform: scale(0.85); }
+  .bat-x img { width: 16px; height: 16px; opacity: 0.9; transform: rotate(45deg); }
+
+  /* ring */
+  .bat-ring { position: absolute; left: -3px; top: calc(50% - 1px); transform: translateY(-50%); width: 56.72px; height: 56.72px; pointer-events: none; }
+  .bat-glow-outer { position: absolute; inset: 0; border-radius: 50%; border: 1px solid var(--bat-c); opacity: 0.2; animation: batGlow calc(4.2s*var(--speed)) ease-in-out infinite; }
+  .bat-glow-inner { position: absolute; left: 8.51px; top: 8.36px; width: 40px; height: 40px; border-radius: 50%; border: 1px solid var(--bat-c); opacity: 0.6; }
+  @keyframes batGlow { 0%,100%{ opacity: 0.14; } 50%{ opacity: 0.30; } }
+  .bat-body { position: absolute; left: 10.57px; top: 10.36px; width: 35.88px; height: 36.09px; border-radius: 9px; overflow: hidden; box-shadow: inset 0 0 0 1px rgba(255,255,255,0.06); }
+  .bat-body img { width: 100%; height: 100%; object-fit: cover; display: block; }
+  .bat-bolt { position: absolute; left: 50%; top: 50%; width: 8.52px; height: 13.5px; transform: translate(-50%,-50%);
+    background: var(--bat-c); -webkit-mask: url("assets/battery/bolt-amber.svg") center/contain no-repeat; mask: url("assets/battery/bolt-amber.svg") center/contain no-repeat;
+    filter: drop-shadow(0 0 4px var(--bat-c)); }
+
+  /* ripples — emanate from the ring */
+  .bat-ripple { position: absolute; left: 28.36px; top: 28.36px; width: 40px; height: 40px; margin: -20px 0 0 -20px; border-radius: 50%; border: 1px solid var(--bat-c); opacity: 0; }
+  .bat-ring[data-rippling="true"] .bat-ripple { animation: batRipple calc(3.8s*var(--speed)) var(--out) infinite; }
+  .bat-ring[data-rippling="true"] .bat-ripple:nth-child(2) { animation-delay: calc(1.27s*var(--speed)); }
+  .bat-ring[data-rippling="true"] .bat-ripple:nth-child(3) { animation-delay: calc(2.54s*var(--speed)); }
+  .bat-ring.calm[data-rippling="true"] .bat-ripple { animation-duration: calc(6.5s*var(--speed)); }
+  @keyframes batRipple {
+    0%   { transform: scale(0.55); opacity: 0; }
+    18%  { opacity: 0.4; }
+    100% { transform: scale(1.85); opacity: 0; }
+  }
+  .bat-ring.calm .bat-glow-outer { animation-duration: calc(6.5s*var(--speed)); }
+
+  /* entrance */
+  .bat-card.entering { animation: batDrop calc(560ms*var(--speed)) var(--back); }
+  @keyframes batDrop {
+    0%   { opacity: 0; transform: translateY(-18px) scale(0.94); }
+    60%  { opacity: 1; }
+    100% { opacity: 1; transform: translateY(0) scale(1); }
+  }
+
+  /* dismiss: collapse to a coin, then fly into the hamburger */
+  .bat-card.collapsing {
+    width: 52px; overflow: hidden; transform-origin: left center;
+    transition: width calc(200ms*var(--speed)) var(--ease), border-radius calc(200ms*var(--speed)) var(--ease);
+  }
+  .bat-card.collapsing .bat-msg, .bat-card.collapsing .bat-x { opacity: 0; }
+  .bat-card.merging {
+    transition: transform calc(300ms*var(--speed)) cubic-bezier(0.5, 0, 0.75, 0), opacity calc(300ms*var(--speed)) ease-in;
+    opacity: 0;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .bat-glow-outer, .bat-ring[data-rippling="true"] .bat-ripple { animation: none !important; }
+    .bat-card.entering { animation: none; }
+  }
+
+  /* ══════════════════════════════════════════
+     COMPONENT · Stacked Notifications (interaction 06)
+     1:1 with Figma · Phoenix workspace · node 519-1166
+     Cards stack & peek. Dismissible → swipe/✕ removes. Firmware
+     (non-dismissible) → swipe sends it to the back of the stack.
+     ══════════════════════════════════════════ */
+  .nf-wrap {
+    --speed: 1;
+    --spring: cubic-bezier(0.34, 1.32, 0.5, 1);
+    --out: cubic-bezier(0.22, 1, 0.36, 1);
+    --accent: #1539f5;
+  }
+  .nf-stack { position: relative; width: 370px; margin: 0 auto; height: 108px; }
+  .nf-card {
+    position: absolute; left: 0; top: 0; width: 370px;
+    border-radius: 16px; background: #eee; border: 1px solid #fff;
+    box-shadow: 0 2px 7.5px rgba(0,0,0,0.12);
+    transform-origin: center top;
+    will-change: transform, opacity;
+    touch-action: pan-y;
+    cursor: grab;
+  }
+  .nf-card.front { cursor: grab; }
+  .nf-card:not(.front) { pointer-events: none; }
+  .nf-card.dragging { cursor: grabbing; transition: none !important; }
+  .nf-card.animating { transition: transform calc(440ms*var(--speed)) var(--spring), opacity calc(300ms*var(--speed)) var(--out); }
+  .nf-card.leaving { transition: transform calc(340ms*var(--speed)) var(--out), opacity calc(300ms*var(--speed)) var(--out); }
+
+  .nf-row { display: flex; align-items: center; justify-content: space-between; gap: 8px; padding: 4px 8px 4px 4px; border-radius: 16px; background: rgba(255,255,255,0.07); }
+  .nf-left { display: flex; align-items: center; gap: 8px; min-width: 0; flex: 1 1 auto; }
+  .nf-thumb { width: 56px; height: 56px; border-radius: 12px; overflow: hidden; flex: none; background: #fff; }
+  .nf-thumb img { width: 100%; height: 100%; object-fit: cover; display: block; }
+  .nf-msg { display: flex; flex-direction: column; min-width: 0; }
+  .nf-h { font-family: var(--sans); font-weight: 500; font-size: 14px; line-height: 20px; color: #0f0f0f; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .nf-s { font-family: var(--sans); font-weight: 400; font-size: 11px; line-height: 16px; letter-spacing: 0.4px; color: #52525b; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .nf-ctl { flex: none; display: flex; align-items: center; }
+  .nf-update { background: transparent; border: 0; cursor: pointer; padding: 8px 12px; font-family: var(--sans); font-weight: 600; font-size: 13px; letter-spacing: -0.32px; color: var(--accent); white-space: nowrap; transition: transform 140ms var(--out); }
+  .nf-update:active { transform: scale(0.94); }
+  .nf-x { width: 30px; height: 30px; border-radius: 50%; flex: none; display: grid; place-items: center; background: transparent; border: 0; cursor: pointer; transition: transform 140ms var(--out), background 160ms ease; }
+  .nf-x:hover { background: rgba(0,0,0,0.05); }
+  .nf-x:active { transform: scale(0.88); }
+  .nf-x img { width: 13px; height: 13px; opacity: 0.45; }
+
+  /* a hint that a non-dismissible card was sent back */
+  .nf-toast {
+    position: absolute; left: 50%; bottom: -6px; transform: translate(-50%, 8px);
+    font-family: var(--mono); font-size: 10px; letter-spacing: 0.08em; text-transform: uppercase;
+    color: var(--muted-2); opacity: 0; pointer-events: none;
+    transition: opacity 200ms ease, transform 240ms var(--out);
+  }
+  .nf-toast.show { opacity: 1; transform: translate(-50%, 0); }
+
+  @media (prefers-reduced-motion: reduce) {
+    .nf-card.animating, .nf-card.leaving { transition-duration: 140ms; }
+  }
+</style>
+</head>
+<body>
+
+<header class="topbar">
+  <div class="brand">UH · <b>Interaction Lab</b></div>
+  <div class="brand-r">Lite</div>
+</header>
+
+<main class="feed">
+
+  <!-- ══ 01 · Live Pill ══════════════════════ -->
+  <section class="ix" id="live-pill">
+    <div class="ix-head">
+      <div class="ix-title">
+        <span class="ix-num">01</span>
+        <h2>Live Pill</h2>
+      </div>
+      <button class="spec-btn" data-spec="live-pill" data-title="Live Pill · Motion spec" data-sub="Figma · Phoenix workspace · node 485-1264">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/></svg>
+        Motion spec
+      </button>
+    </div>
+
+    <div class="ix-stage">
+      <div class="lp-card" id="lpCard" data-state="collapsed" data-mode="live" role="button" tabindex="0" aria-expanded="false" aria-label="Live activity summary">
+        <div class="lp-bg lp-bg-live-collapsed"></div>
+        <div class="lp-bg lp-bg-live-expanded"></div>
+        <div class="lp-bg lp-bg-stale"></div>
+
+        <!-- Persistent status — fixed position across expand/collapse; dot breathes in live mode -->
+        <div class="lp-status">
+          <span class="lp-swap">
+            <span class="lp-badge when-live"><span class="lp-dot"></span>live</span>
+            <span class="lp-time when-stale">12:28AM</span>
+          </span>
+        </div>
+
+        <div class="lp-collapsed">
+          <span class="lp-swap lp-ghost" aria-hidden="true">
+            <span class="lp-badge when-live"><span class="lp-dot"></span>live</span>
+            <span class="lp-time when-stale">12:28AM</span>
+          </span>
+          <span class="lp-inline">
+            <span class="lp-im">
+              <span class="lp-ic lp-swap">
+                <img class="when-live" src="assets/live-pill/icon-heart-white.svg" alt="" />
+                <img class="when-stale" src="assets/live-pill/icon-heart-gray.svg" alt="" />
+              </span>
+              <span class="lp-iv"><span class="lp-num" data-live="hr">120</span> BPM</span>
+            </span>
+            <i class="lp-div"></i>
+            <span class="lp-im">
+              <span class="lp-ic lp-ic-brain lp-swap">
+                <img class="when-live" src="assets/live-pill/icon-stress-white.svg" alt="" />
+                <img class="when-stale" src="assets/live-pill/icon-stress-gray.svg" alt="" />
+              </span>
+              <span class="lp-iv">Relaxed</span>
+            </span>
+            <i class="lp-div"></i>
+            <span class="lp-im">
+              <span class="lp-ic lp-swap">
+                <img class="when-live" src="assets/live-pill/icon-steps-white.svg" alt="" />
+                <img class="when-stale" src="assets/live-pill/icon-steps-gray.svg" alt="" />
+              </span>
+              <span class="lp-iv"><span class="lp-num" data-live="steps">11,489</span></span>
+            </span>
+          </span>
+          <span class="lp-arrow lp-ic lp-swap">
+            <img class="when-live" src="assets/live-pill/icon-expand-white.svg" alt="" />
+            <img class="when-stale" src="assets/live-pill/icon-expand-dark.svg" alt="" />
+          </span>
+        </div>
+
+        <div class="lp-expanded">
+          <div class="lp-exp-head">
+            <span class="lp-swap lp-ghost" aria-hidden="true">
+              <span class="lp-badge-x when-live"><span class="lp-dot lp-dot-x"></span>live</span>
+              <span class="lp-time when-stale">12:28AM</span>
+            </span>
+            <span class="lp-arrow-x lp-ic lp-swap">
+              <img class="when-live" src="assets/live-pill/icon-collapse-white.svg" alt="" />
+              <img class="when-stale" src="assets/live-pill/icon-collapse-dark.svg" alt="" />
+            </span>
+          </div>
+          <div class="lp-rows">
+            <div class="lp-row">
+              <span class="lp-row-l">
+                <span class="lp-ic lp-swap">
+                  <img class="when-live" src="assets/live-pill/icon-heart-white.svg" alt="" />
+                  <img class="when-stale" src="assets/live-pill/icon-heart-gray.svg" alt="" />
+                </span>
+                <span class="lp-label">Heart rate</span>
+              </span>
+              <span class="lp-val"><span class="lp-num" data-live="hr">120</span> BPM</span>
+            </div>
+            <div class="lp-row">
+              <span class="lp-row-l">
+                <span class="lp-ic lp-ic-brain lp-swap">
+                  <img class="when-live" src="assets/live-pill/icon-stress-white.svg" alt="" />
+                  <img class="when-stale" src="assets/live-pill/icon-stress-gray.svg" alt="" />
+                </span>
+                <span class="lp-label">Stress</span>
+              </span>
+              <span class="lp-val">STRESSED</span>
+            </div>
+            <div class="lp-row">
+              <span class="lp-row-l">
+                <span class="lp-ic lp-swap">
+                  <img class="when-live" src="assets/live-pill/icon-steps-white.svg" alt="" />
+                  <img class="when-stale" src="assets/live-pill/icon-steps-gray.svg" alt="" />
+                </span>
+                <span class="lp-label">Steps</span>
+              </span>
+              <span class="lp-val lp-val-steps"><span class="lp-num" data-live="steps">11,489</span>/14000</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="stage-foot">
+        <div class="ctl">
+          <div class="ctl-group">
+            <span class="ctl-label">Data</span>
+            <div class="seg" data-seg="mode">
+              <button data-mode="live" class="on">Live</button>
+              <button data-mode="stale">Stale</button>
+            </div>
+          </div>
+          <div class="ctl-group">
+            <span class="ctl-label">Speed</span>
+            <div class="seg" data-seg="speed">
+              <button data-speed="1" class="on">1×</button>
+              <button data-speed="4">0.25×</button>
+              <button data-speed="10">0.1×</button>
+            </div>
+          </div>
+          <button class="btn-ghost" data-replay>Replay</button>
+        </div>
+        <div class="stage-hint">Tap the card — or press <code>Space</code></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ══ 02 · Bio Intelligence ════════════════ -->
+  <section class="ix" id="bio-intelligence">
+    <div class="ix-head">
+      <div class="ix-title">
+        <span class="ix-num">02</span>
+        <h2>Bio Intelligence</h2>
+      </div>
+      <button class="spec-btn" data-spec="bio-intelligence" data-title="Bio Intelligence · Motion spec" data-sub="Figma · Phoenix workspace · node 494-1132">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/></svg>
+        Motion spec
+      </button>
+    </div>
+
+    <div class="ix-stage">
+      <div class="bi-card" id="biCard" data-state="empty">
+        <div class="bi-panel">
+
+          <!-- Persistent header (collapsed + expanded) -->
+          <div class="bi-header" id="biHeader" role="button" tabindex="0" aria-label="Toggle Bio Intelligence detail">
+            <div class="bi-brand">
+              <img class="bi-logo" src="assets/bio-intelligence/logo.svg" alt="" />
+              <span class="bi-name">Bio Intelligence</span>
+              <span class="bi-meta">• Jade 1.0</span>
+            </div>
+            <span class="bi-arrow">
+              <img class="a-expand" src="assets/bio-intelligence/icon-expand.svg" alt="Expand" />
+              <img class="a-collapse" src="assets/bio-intelligence/icon-collapse.svg" alt="Collapse" />
+            </span>
+          </div>
+
+          <!-- State 1 · Empty (no insight) -->
+          <div class="bi-layer bi-empty">
+            <div class="bi-q" id="biQ">What should I do to improve my VO2 max?</div>
+          </div>
+
+          <!-- State 2 · Collapsed (two insights) -->
+          <div class="bi-layer bi-collapsed">
+            <div class="bi-insights">
+              <div class="bi-insight">
+                <img class="bi-iarrow" src="assets/bio-intelligence/icon-arrow.svg" alt="" />
+                <span class="bi-itext">Take a 20-min walk</span>
+              </div>
+              <div class="bi-insight">
+                <img class="bi-iarrow" src="assets/bio-intelligence/icon-arrow.svg" alt="" />
+                <span class="bi-itext">Low ferritin pattern • <span class="bi-trend">Trend detected</span></span>
+              </div>
+            </div>
+          </div>
+
+          <!-- State 3 · Expanded (carousel) -->
+          <div class="bi-layer bi-expanded">
+            <div class="bi-exp-inner">
+              <div class="bi-carousel" id="biCarousel" tabindex="0" aria-roledescription="carousel" aria-label="Insights">
+                <div class="bi-track" id="biTrack">
+
+                  <div class="bi-slide" aria-label="Insight 1 of 2">
+                    <div class="bi-slide-card">
+                      <div class="bi-slide-head">
+                        <div class="bi-slide-left">
+                          <div class="bi-avatar"><img src="assets/bio-intelligence/icon-realtime.svg" alt="" /></div>
+                          <div>
+                            <div class="bi-slide-cat">Real-time</div>
+                            <div class="bi-slide-title">Take a 20-min walk</div>
+                          </div>
+                        </div>
+                        <div class="bi-actions">
+                          <button class="bi-act bi-act-bm" aria-label="Bookmark"><img src="assets/bio-intelligence/icon-bookmark.svg" alt="" /></button>
+                          <button class="bi-act bi-act-ck" aria-label="Mark done"><img src="assets/bio-intelligence/icon-check.svg" alt="" /></button>
+                        </div>
+                      </div>
+                      <div class="bi-slide-body">You've been <b>inactive for 3hrs</b> since waking. Given your <b>"Move More"</b> goal and the current <b>18°C weather</b>, a brisk outdoor walk would maximize your movement score before your afternoon meetings.</div>
+                      <div class="bi-score"><img src="assets/bio-intelligence/icon-spark.svg" alt="" /><span>+8</span></div>
+                    </div>
+                  </div>
+
+                  <div class="bi-slide" aria-label="Insight 2 of 2">
+                    <div class="bi-slide-card">
+                      <div class="bi-slide-head">
+                        <div class="bi-slide-left">
+                          <div class="bi-avatar"><img src="assets/bio-intelligence/icon-deepanalysis.svg" alt="" /></div>
+                          <div>
+                            <div class="bi-slide-cat">Deep Analysis</div>
+                            <div class="bi-slide-title">Low ferritin pattern</div>
+                          </div>
+                        </div>
+                        <div class="bi-actions">
+                          <button class="bi-act bi-act-bm" aria-label="Bookmark"><img src="assets/bio-intelligence/icon-bookmark.svg" alt="" /></button>
+                          <button class="bi-act bi-act-ck" aria-label="Mark done"><img src="assets/bio-intelligence/icon-check.svg" alt="" /></button>
+                        </div>
+                      </div>
+                      <div class="bi-slide-body">Your last panel showed borderline <em>ferritin (38 ng/mL)</em>. Cross-referencing <em>6 weeks</em> of wearable data reveals <em>11% lower HRV</em> and elevated resting HR on high-strain days—consistent with suboptimal iron stores.</div>
+                    </div>
+                  </div>
+
+                </div>
+              </div>
+              <div class="bi-exp-controls">
+                <button class="bi-saved" aria-label="Saved insights"><img src="assets/bio-intelligence/icon-saved.svg" alt="" /></button>
+                <div class="bi-dots" id="biDots">
+                  <button class="bi-dot on" data-i="0" aria-label="Go to insight 1"></button>
+                  <button class="bi-dot" data-i="1" aria-label="Go to insight 2"></button>
+                </div>
+              </div>
+            </div>
+          </div>
+
+        </div>
+
+        <!-- Persistent footer -->
+        <div class="bi-chat" role="button" tabindex="0" aria-label="Chat with Jade">
+          <img src="assets/bio-intelligence/icon-sparkle.svg" alt="" />
+          <span>Chat with Jade</span>
+        </div>
+      </div>
+
+      <div class="stage-foot">
+        <div class="ctl">
+          <div class="ctl-group">
+            <span class="ctl-label">State</span>
+            <div class="seg" data-seg="bi-state">
+              <button data-state="empty" class="on">No insight</button>
+              <button data-state="collapsed">Collapsed</button>
+              <button data-state="expanded">Expanded</button>
+            </div>
+          </div>
+          <div class="ctl-group">
+            <span class="ctl-label">Speed</span>
+            <div class="seg" data-seg="bi-speed">
+              <button data-speed="1" class="on">1×</button>
+              <button data-speed="4">0.25×</button>
+              <button data-speed="10">0.1×</button>
+            </div>
+          </div>
+        </div>
+        <div class="stage-hint">Tap the header to expand · drag the cards to browse insights</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ══ 03 · Live Pill · V2 (liquid metal) ════ -->
+  <section class="ix" id="live-pill-v2">
+    <div class="ix-head">
+      <div class="ix-title">
+        <span class="ix-num">03</span>
+        <h2>Live Pill · V2 — Liquid metal</h2>
+      </div>
+      <button class="spec-btn" data-spec="live-pill-v2" data-title="Live Pill V2 · Motion spec" data-sub="Figma · Phoenix workspace · node 499-1194">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/></svg>
+        Motion spec
+      </button>
+    </div>
+
+    <div class="ix-stage">
+      <div class="lp-card lp-v2" id="lpCardV2" data-state="collapsed" data-mode="live" role="button" tabindex="0" aria-expanded="false" aria-label="Live activity summary (active)">
+        <div class="lp-liquid">
+          <svg class="lp-lm" viewBox="0 0 370 160" preserveAspectRatio="xMidYMid slice" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+            <defs>
+              <radialGradient id="lmBase" cx="34%" cy="28%" r="95%">
+                <stop offset="0%"  stop-color="#f3fff8"/>
+                <stop offset="42%" stop-color="#d4f6e0"/>
+                <stop offset="100%" stop-color="#a4e4be"/>
+              </radialGradient>
+              <linearGradient id="lmVein" x1="0" y1="0" x2="1" y2="1">
+                <stop offset="0%"   stop-color="#cdf3da"/>
+                <stop offset="35%"  stop-color="#79cc9a"/>
+                <stop offset="60%"  stop-color="#f0fff5"/>
+                <stop offset="82%"  stop-color="#67bd8d"/>
+                <stop offset="100%" stop-color="#bdeece"/>
+              </linearGradient>
+              <filter id="lmWarp" x="-30%" y="-30%" width="160%" height="160%" color-interpolation-filters="sRGB">
+                <feTurbulence type="fractalNoise" baseFrequency="0.011 0.017" numOctaves="4" seed="11" stitchTiles="stitch" result="n"/>
+                <feDisplacementMap in="SourceGraphic" in2="n" xChannelSelector="R" yChannelSelector="G" scale="30">
+                  <animate attributeName="scale" dur="18s" values="22;40;22" repeatCount="indefinite" calcMode="spline" keyTimes="0;0.5;1" keySplines="0.45 0 0.55 1;0.45 0 0.55 1"/>
+                </feDisplacementMap>
+              </filter>
+              <filter id="lmSheen" x="-30%" y="-30%" width="160%" height="160%" color-interpolation-filters="sRGB">
+                <feTurbulence type="fractalNoise" baseFrequency="0.014 0.022" numOctaves="3" seed="4" stitchTiles="stitch" result="sn"/>
+                <feSpecularLighting in="sn" surfaceScale="3.5" specularConstant="0.9" specularExponent="18" lighting-color="#ffffff" result="sp">
+                  <fePointLight x="80" y="30" z="90">
+                    <animate attributeName="x" dur="26s" values="40;330;150;40" repeatCount="indefinite" calcMode="spline" keyTimes="0;0.4;0.72;1" keySplines="0.4 0 0.6 1;0.4 0 0.6 1;0.4 0 0.6 1"/>
+                    <animate attributeName="y" dur="32s" values="18;120;46;18" repeatCount="indefinite" calcMode="spline" keyTimes="0;0.42;0.74;1" keySplines="0.4 0 0.6 1;0.4 0 0.6 1;0.4 0 0.6 1"/>
+                  </fePointLight>
+                </feSpecularLighting>
+                <feComponentTransfer in="sp" result="sp2"><feFuncA type="linear" slope="0.5"/></feComponentTransfer>
+                <feComposite in="sp2" in2="SourceAlpha" operator="in"/>
+              </filter>
+            </defs>
+            <rect width="370" height="160" fill="url(#lmBase)"/>
+            <rect width="370" height="160" fill="url(#lmVein)" filter="url(#lmWarp)" opacity="0.5" style="mix-blend-mode:soft-light"/>
+            <rect width="370" height="160" fill="#ffffff" filter="url(#lmSheen)" style="mix-blend-mode:screen"/>
+          </svg>
+        </div>
+
+        <div class="lp-status">
+          <span class="lp-badge"><span class="lp-dot"></span>live</span>
+        </div>
+
+        <div class="lp-collapsed">
+          <span class="lp-badge lp-ghost" aria-hidden="true"><span class="lp-dot"></span>live</span>
+          <span class="lp-inline">
+            <span class="lp-im">
+              <span class="lp-ic lp-swap"><img src="assets/live-pill/icon-heart-white.svg" alt="" /></span>
+              <span class="lp-iv"><span class="lp-num" data-live="hr">120</span> BPM</span>
+            </span>
+            <i class="lp-div"></i>
+            <span class="lp-im">
+              <span class="lp-ic lp-ic-brain lp-swap"><img src="assets/live-pill/icon-stress-white.svg" alt="" /></span>
+              <span class="lp-iv">Relaxed</span>
+            </span>
+            <i class="lp-div"></i>
+            <span class="lp-im">
+              <span class="lp-ic lp-swap"><img src="assets/live-pill/icon-steps-white.svg" alt="" /></span>
+              <span class="lp-iv"><span class="lp-num" data-live="steps">11,489</span></span>
+            </span>
+          </span>
+          <span class="lp-arrow lp-ic lp-swap"><img src="assets/live-pill/icon-expand-white.svg" alt="" /></span>
+        </div>
+
+        <div class="lp-expanded">
+          <div class="lp-exp-head">
+            <span class="lp-badge-x lp-ghost" aria-hidden="true"><span class="lp-dot lp-dot-x"></span>live</span>
+            <span class="lp-arrow-x lp-ic lp-swap"><img src="assets/live-pill/icon-collapse-white.svg" alt="" /></span>
+          </div>
+          <div class="lp-rows">
+            <div class="lp-row">
+              <span class="lp-row-l">
+                <span class="lp-ic lp-swap"><img src="assets/live-pill/icon-heart-white.svg" alt="" /></span>
+                <span class="lp-label">Heart rate</span>
+              </span>
+              <span class="lp-val">ZONE 3 • <span class="lp-num" data-live="hr">120</span> BPM</span>
+            </div>
+            <div class="lp-row">
+              <span class="lp-row-l">
+                <span class="lp-ic lp-ic-brain lp-swap"><img src="assets/live-pill/icon-stress-white.svg" alt="" /></span>
+                <span class="lp-label">Stress</span>
+              </span>
+              <span class="lp-val">STRESSED</span>
+            </div>
+            <div class="lp-row">
+              <span class="lp-row-l">
+                <span class="lp-ic lp-swap"><img src="assets/live-pill/icon-steps-white.svg" alt="" /></span>
+                <span class="lp-label">Steps</span>
+              </span>
+              <span class="lp-val lp-val-steps"><span class="lp-num" data-live="steps">11,489</span>/14000</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="stage-foot">
+        <div class="ctl">
+          <div class="ctl-group">
+            <span class="ctl-label">State</span>
+            <div class="seg" data-seg="v2-state">
+              <button data-state="collapsed" class="on">Collapsed</button>
+              <button data-state="expanded">Expanded</button>
+            </div>
+          </div>
+          <div class="ctl-group">
+            <span class="ctl-label">Speed</span>
+            <div class="seg" data-seg="v2-speed">
+              <button data-speed="1" class="on">1×</button>
+              <button data-speed="4">0.25×</button>
+              <button data-speed="10">0.1×</button>
+            </div>
+          </div>
+          <button class="btn-ghost" data-replay-v2>Replay</button>
+        </div>
+        <div class="stage-hint">Liquid-metal field drifts continuously · tap the card to expand</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ══ 04 · Activity Detection ══════════════ -->
+  <section class="ix" id="activity-detection">
+    <div class="ix-head">
+      <div class="ix-title">
+        <span class="ix-num">04</span>
+        <h2>Activity Detection</h2>
+      </div>
+      <button class="spec-btn" data-spec="activity-detection" data-title="Activity Detection · Motion spec" data-sub="Figma · Phoenix workspace · node 511-35785">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/></svg>
+        Motion spec
+      </button>
+    </div>
+
+    <div class="ix-stage">
+      <div class="ad-card" id="adCard" data-style="A" data-expanded="false" data-recolor="neutral">
+        <div class="ad-head">
+          <h4>Today's Activities</h4>
+          <span class="ad-tot"><img src="assets/activity/icon-bolt.svg" alt="">+62 pts</span>
+        </div>
+
+        <div class="ad-list" id="adHost"><!-- first 3 rows --></div>
+        <div class="ad-fold" id="adFold" data-open="false"><div class="ad-fold-inner" id="adFoldInner"><!-- rows 4+ --></div></div>
+        <button class="ad-toggle" id="adToggle" type="button"><span id="adToggleLabel">Show more</span><img src="assets/activity/icon-chevron.svg" alt=""></button>
+      </div>
+
+      <div class="stage-foot">
+        <div class="ctl">
+          <div class="ctl-group">
+            <span class="ctl-label">Confirm style</span>
+            <div class="seg" data-seg="ad-style">
+              <button data-style="A" class="on">A · Stamp</button>
+              <button data-style="B">B · Ripple</button>
+              <button data-style="C">C · Glide</button>
+            </div>
+          </div>
+          <div class="ctl-group">
+            <span class="ctl-label">Recorded icon</span>
+            <div class="seg" data-seg="ad-recolor">
+              <button data-recolor="neutral" class="on">Neutral</button>
+              <button data-recolor="keep">Colored</button>
+            </div>
+          </div>
+          <div class="ctl-group">
+            <span class="ctl-label">Speed</span>
+            <div class="seg" data-seg="ad-speed">
+              <button data-speed="1" class="on">1×</button>
+              <button data-speed="2">0.5×</button>
+              <button data-speed="4">0.25×</button>
+            </div>
+          </div>
+          <button class="btn-ghost" data-ad-reset>Reset</button>
+        </div>
+        <div class="stage-hint">Tap ✓ to confirm &amp; record · ✗ to dismiss · switch the confirm style above</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ══ 05 · Battery Low Notification ════════ -->
+  <section class="ix" id="battery-low">
+    <div class="ix-head">
+      <div class="ix-title">
+        <span class="ix-num">05</span>
+        <h2>Battery Low Notification</h2>
+      </div>
+      <button class="spec-btn" data-spec="battery-low" data-title="Battery Low · Motion spec" data-sub="Figma · Phoenix workspace · node 517-1134">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/></svg>
+        Motion spec
+      </button>
+    </div>
+
+    <div class="ix-stage">
+      <div class="bat-screen" id="batScreen">
+        <div class="bat-statusbar">
+          <span class="t">9:41</span>
+          <span class="icons">
+            <svg width="18" height="12" viewBox="0 0 18 12" fill="currentColor"><rect x="0" y="7" width="3" height="5" rx="1"/><rect x="5" y="4.5" width="3" height="7.5" rx="1"/><rect x="10" y="2" width="3" height="10" rx="1"/><rect x="15" y="0" width="3" height="12" rx="1"/></svg>
+            <svg width="17" height="12" viewBox="0 0 17 12" fill="currentColor"><path d="M8.5 2.2c2.7 0 5.2 1 7 2.8l-1.5 1.5A7.8 7.8 0 0 0 8.5 4.3 7.8 7.8 0 0 0 3 6.5L1.5 5A9.9 9.9 0 0 1 8.5 2.2Zm0 3.6c1.7 0 3.3.7 4.5 1.8l-1.6 1.6a4 4 0 0 0-5.8 0L4 7.6A6.4 6.4 0 0 1 8.5 5.8Zm0 3.5 1.8 1.8-1.8 1.8-1.8-1.8L8.5 9.3Z"/></svg>
+            <svg width="26" height="13" viewBox="0 0 26 13" fill="none"><rect x="0.5" y="0.5" width="22" height="12" rx="3.5" stroke="currentColor" opacity="0.4"/><rect x="2" y="2" width="19" height="9" rx="2" fill="currentColor"/><rect x="23.5" y="4" width="1.5" height="5" rx="0.75" fill="currentColor" opacity="0.4"/></svg>
+          </span>
+        </div>
+
+        <div class="bat-topbar">
+          <button class="bat-hamb" id="batHamb" aria-label="Menu"><img src="assets/battery/icon-hamburger.svg" alt=""><span class="bat-dot"></span></button>
+          <div class="bat-wordmark"><b>ULTRAHUMAN</b><svg class="chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg></div>
+          <div class="bat-today"><span class="a">‹</span>Today<span class="a">›</span></div>
+        </div>
+
+        <div class="bat-slot" id="batSlot">
+          <div class="bat-card entering" id="batCard" data-variant="amber">
+            <div class="bat-ring" id="batRing" data-rippling="true">
+              <span class="bat-ripple"></span><span class="bat-ripple"></span><span class="bat-ripple"></span>
+              <div class="bat-glow-outer"></div>
+              <div class="bat-glow-inner"></div>
+              <div class="bat-body"><img src="assets/battery/body.png" alt=""></div>
+              <div class="bat-bolt"></div>
+            </div>
+            <div class="bat-msg">
+              <div class="bat-h">Low battery</div>
+              <div class="bat-sub" id="batSub">Less than 30% remaining</div>
+            </div>
+            <button class="bat-x" id="batX" aria-label="Dismiss"><img src="assets/battery/icon-close.svg" alt=""></button>
+          </div>
+        </div>
+      </div>
+
+      <div class="stage-foot">
+        <div class="ctl">
+          <div class="ctl-group">
+            <span class="ctl-label">Variant</span>
+            <div class="seg" data-seg="bat-variant">
+              <button data-variant="amber" class="on">&lt; 30%</button>
+              <button data-variant="red">&lt; 10%</button>
+            </div>
+          </div>
+          <div class="ctl-group">
+            <span class="ctl-label">Speed</span>
+            <div class="seg" data-seg="bat-speed">
+              <button data-speed="1" class="on">1×</button>
+              <button data-speed="2">0.5×</button>
+              <button data-speed="4">0.25×</button>
+            </div>
+          </div>
+          <button class="btn-ghost" data-bat-replay>Replay</button>
+        </div>
+        <div class="stage-hint">Card drops in &amp; ripples, then calms · tap ✕ to collapse it into the menu</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ══ 06 · Stacked Notifications ═══════════ -->
+  <section class="ix" id="stacked-notifications">
+    <div class="ix-head">
+      <div class="ix-title">
+        <span class="ix-num">06</span>
+        <h2>Stacked Notifications</h2>
+      </div>
+      <button class="spec-btn" data-spec="stacked-notifications" data-title="Stacked Notifications · Motion spec" data-sub="Figma · Phoenix workspace · node 519-1166">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/></svg>
+        Motion spec
+      </button>
+    </div>
+
+    <div class="ix-stage">
+      <div class="nf-wrap">
+        <div class="nf-stack" id="nfStack"><!-- cards injected --></div>
+        <div class="nf-toast" id="nfToast">Sent to back</div>
+      </div>
+
+      <div class="stage-foot">
+        <div class="ctl">
+          <div class="ctl-group">
+            <span class="ctl-label">Speed</span>
+            <div class="seg" data-seg="nf-speed">
+              <button data-speed="1" class="on">1×</button>
+              <button data-speed="2">0.5×</button>
+              <button data-speed="4">0.25×</button>
+            </div>
+          </div>
+          <button class="btn-ghost" data-nf-reset>Reset</button>
+        </div>
+        <div class="stage-hint">Swipe or ✕ to dismiss · Firmware can't be dismissed — swipe it to send it to the back</div>
+      </div>
+    </div>
+  </section>
+
+</main>
+
+<!-- ── Spec modal (shared) ─────────────────── -->
+<div class="modal-backdrop" id="specModal" aria-hidden="true">
+  <div class="modal" role="dialog" aria-modal="true" aria-labelledby="specModalTitle">
+    <div class="modal-head">
+      <div>
+        <h3 id="specModalTitle">Live Pill · Motion spec</h3>
+        <div class="sub">Figma · Phoenix workspace · node 485-1264</div>
+      </div>
+      <button class="modal-close" data-close aria-label="Close">×</button>
+    </div>
+    <div class="modal-body" id="specBody"><!-- injected --></div>
+  </div>
+</div>
+
+<!-- Spec content (hidden source for the modal) -->
+<template id="spec-live-pill">
+  <div class="acc open">
+    <button class="acc-head"><span>01 · Expand — on tap</span><svg class="chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg></button>
+    <div class="acc-body"><div class="acc-inner"><div class="spec">
+      <div class="sp"><div class="sp-t">Container 48 → 153px <span class="sp-v">420ms · cubic-bezier(0.32, 0.72, 0, 1)</span></div>
+        <div class="sp-p">iOS: .spring(response: 0.42, dampingFraction: 0.85) or matchedGeometry · Android: PathInterpolator(0.32f, 0.72f, 0f, 1f) + animateContentSize</div></div>
+      <div class="sp"><div class="sp-t">Collapsed row out: opacity → 0, blur 2px <span class="sp-v">120ms · ease-out · t=0</span></div>
+        <div class="sp-p">Content leaves before the container lands. Blur masks the crossfade.</div></div>
+      <div class="sp"><div class="sp-t">Header (LIVE + collapse arrow) in <span class="sp-v">200ms · ease-out · t=+100ms</span></div></div>
+      <div class="sp"><div class="sp-t">Metric rows: translateY 8 → 0 + fade <span class="sp-v">260ms · cubic-bezier(0.23, 1, 0.32, 1) · stagger 45ms · t=+140ms</span></div>
+        <div class="sp-p">Order: heart rate → stress → steps. Stagger is decorative; never block input.</div></div>
+      <div class="sp"><div class="sp-t">Background crossfade <span class="sp-v">420ms · ease, synced with height</span></div></div>
+    </div></div></div>
+  </div>
+  <div class="acc">
+    <button class="acc-head"><span>02 · Collapse — on tap</span><svg class="chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg></button>
+    <div class="acc-body"><div class="acc-inner"><div class="spec">
+      <div class="sp"><div class="sp-t">Container height → 48px <span class="sp-v">360ms · same curve</span></div>
+        <div class="sp-p">Collapse is faster than expand — exits should always be snappier than entrances.</div></div>
+      <div class="sp"><div class="sp-t">Expanded content out <span class="sp-v">100ms · ease-out · t=0</span></div></div>
+      <div class="sp"><div class="sp-t">Collapsed row in <span class="sp-v">180ms · ease-out · t=+80ms</span></div></div>
+    </div></div></div>
+  </div>
+  <div class="acc">
+    <button class="acc-head"><span>03 · Press feedback</span><svg class="chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg></button>
+    <div class="acc-body"><div class="acc-inner"><div class="spec">
+      <div class="sp"><div class="sp-t">scale → 0.98 on touch-down, back on release <span class="sp-v">160ms · ease-out</span></div>
+        <div class="sp-p">iOS: UIView.animate on touchDown · Android: scale on ACTION_DOWN. Whole card.</div></div>
+    </div></div></div>
+  </div>
+  <div class="acc">
+    <button class="acc-head"><span>04 · Live ↔ Stale</span><svg class="chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg></button>
+    <div class="acc-body"><div class="acc-inner"><div class="spec">
+      <div class="sp"><div class="sp-t">Holo gradient ↔ #FAFAFA crossfade <span class="sp-v">500ms · ease</span></div>
+        <div class="sp-p">Stale also gains shadow 0 0 25 rgba(0,0,0,0.05). Expanded stale height is 154px (1px taller).</div></div>
+      <div class="sp"><div class="sp-t">Text + icon colors <span class="sp-v">400ms · ease</span></div>
+        <div class="sp-p">White → #0F0F0F (labels) / #171717 (values) / #52525B (time). LIVE badge ↔ 12:28AM crossfade w/ 2px blur, 300ms.</div></div>
+      <div class="sp"><div class="sp-t">Trigger: data feed silent &gt; 60s; revert instantly on next sample</div></div>
+    </div></div></div>
+  </div>
+  <div class="acc">
+    <button class="acc-head"><span>Tokens</span><svg class="chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg></button>
+    <div class="acc-body"><div class="acc-inner"><div class="spec">
+      <div class="sp"><div class="sp-t">Card 370w · r12 · 48h collapsed · 153h expanded (live) / 154h (stale)</div></div>
+      <div class="sp"><div class="sp-t">Type: JetBrains Mono Medium · collapsed 11.75/12px · expanded 13px · LIVE badge 10.77px (11.28 Bold expanded)</div></div>
+      <div class="sp"><div class="sp-t">Live dot #00FFC0 · 5.5px (5.64 expanded) · Dividers #D4D4D8 @30% (live) / #000 @6% (stale)</div></div>
+      <div class="sp"><div class="sp-t">Stress icon = SF Symbol brain.fill (iOS native · Android bundled asset)</div></div>
+    </div></div></div>
+  </div>
+</template>
+
+<template id="spec-bio-intelligence">
+  <div class="acc open">
+    <button class="acc-head"><span>01 · State transitions</span><svg class="chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg></button>
+    <div class="acc-body"><div class="acc-inner"><div class="spec">
+      <div class="sp"><div class="sp-t">Three states: <span class="sp-v">empty → collapsed → expanded</span></div>
+        <div class="sp-p">empty = no insight yet (prompt suggestions). collapsed = 2 summarized insights. expanded = full carousel.</div></div>
+      <div class="sp"><div class="sp-t">Panel height morph 45 → 119 → 339px <span class="sp-v">420ms · cubic-bezier(0.32, 0.72, 0, 1)</span></div>
+        <div class="sp-p">iOS: .spring(response: 0.42, dampingFraction: 0.85) / animateContentSize on Android. Collapse 360ms (exits snappier than entrances).</div></div>
+      <div class="sp"><div class="sp-t">Outgoing layer: opacity → 0 <span class="sp-v">150ms · ease-out · t=0</span></div></div>
+      <div class="sp"><div class="sp-t">Incoming layer: translateY 6 → 0 + fade <span class="sp-v">240ms · ease-out · t=+130ms</span></div></div>
+      <div class="sp"><div class="sp-t">Header is persistent across collapsed↔expanded — does not move; only the corner glyph crossfades expand↔collapse <span class="sp-v">200ms · ease-out</span></div></div>
+    </div></div></div>
+  </div>
+  <div class="acc">
+    <button class="acc-head"><span>02 · Empty — prompt rotation</span><svg class="chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg></button>
+    <div class="acc-body"><div class="acc-inner"><div class="spec">
+      <div class="sp"><div class="sp-t">Cycles a pool of 5–10 suggested questions, one at a time <span class="sp-v">every 3.2s</span></div>
+        <div class="sp-p">Ghost styling: italic, #A1A1AA, resting blur 2px — reads as an un-committed suggestion.</div></div>
+      <div class="sp"><div class="sp-t">Morph on change: blur 2 → 6px + opacity → 0.18, swap text, ease back <span class="sp-v">260ms · ease, swap at 280ms</span></div></div>
+      <div class="sp"><div class="sp-t">Pauses when tab hidden; tapping a prompt should route into Jade chat (out of scope here)</div></div>
+    </div></div></div>
+  </div>
+  <div class="acc">
+    <button class="acc-head"><span>03 · Collapsed — insight reveal</span><svg class="chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg></button>
+    <div class="acc-body"><div class="acc-inner"><div class="spec">
+      <div class="sp"><div class="sp-t">Two insight rows rise in: translateY 8 → 0 + fade <span class="sp-v">280ms · ease-out · stagger 45ms</span></div>
+        <div class="sp-p">Order top → bottom. Decorative; never blocks the tap target.</div></div>
+      <div class="sp"><div class="sp-t">Whole card / header tap → expand</div></div>
+    </div></div></div>
+  </div>
+  <div class="acc">
+    <button class="acc-head"><span>04 · Expanded — carousel</span><svg class="chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg></button>
+    <div class="acc-body"><div class="acc-inner"><div class="spec">
+      <div class="sp"><div class="sp-t">Horizontal drag follows finger 1:1; rubber-band 0.35× past the ends</div>
+        <div class="sp-p">iOS: UIScrollView paging / Android: ViewPager2. Slide pitch 330px (318 card + 12 gap).</div></div>
+      <div class="sp"><div class="sp-t">Snap on release <span class="sp-v">440ms · cubic-bezier(0.32, 0.72, 0, 1)</span></div></div>
+      <div class="sp"><div class="sp-t">Advance if drag > ⅓ slide OR flick velocity > 0.4 px/ms <span class="sp-v">momentum, not distance</span></div>
+        <div class="sp-p">A quick flick pages even when short — interruptible, keeps velocity.</div></div>
+      <div class="sp"><div class="sp-t">Pagination dot: active widens 6 → 12px + darkens <span class="sp-v">280ms · ease-out</span></div></div>
+      <div class="sp"><div class="sp-t">Tap dot to jump; ←/→ keys when focused. Bookmark + check interactions deferred.</div></div>
+    </div></div></div>
+  </div>
+  <div class="acc">
+    <button class="acc-head"><span>Tokens</span><svg class="chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg></button>
+    <div class="acc-body"><div class="acc-inner"><div class="spec">
+      <div class="sp"><div class="sp-t">Card 370w · r12 (r14 expanded) · frosted white + inset 0 2px 1px #fff · shadow 0 0 25 rgba(0,0,0,0.05)</div></div>
+      <div class="sp"><div class="sp-t">Panel #F5F5F5 · r8 (r10 expanded) · pad 12 · slide card r18</div></div>
+      <div class="sp"><div class="sp-t">Jade teal #396860 (labels, CTA, trend, +8) · body #171717 · meta rgba(0,0,0,.5/.7) · ghost #A1A1AA</div></div>
+      <div class="sp"><div class="sp-t">Type: labels JetBrains Mono 12 · body TWK Everett 13–14 (Inter fallback in this prototype)</div></div>
+    </div></div></div>
+  </div>
+</template>
+
+<template id="spec-live-pill-v2">
+  <div class="acc open">
+    <button class="acc-head"><span>01 · Liquid-metal background</span><svg class="chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg></button>
+    <div class="acc-body"><div class="acc-inner"><div class="spec">
+      <div class="sp"><div class="sp-t">Mint base #DEFFE5 + drifting metallic field + Figma texture (image 252) <span class="sp-v">mix-blend-screen</span></div>
+        <div class="sp-p">Production: a Metal/GLSL flow-noise shader on the mint base. This prototype approximates it with animated layered gradients — same look, soft + continuous.</div></div>
+      <div class="sp"><div class="sp-t">Field drift <span class="sp-v">22s · ease-in-out · alternate (translate ±6% · scale 1.12→1.26 · rotate ±7°)</span></div></div>
+      <div class="sp"><div class="sp-t">Specular sweep (conic highlight) <span class="sp-v">34s · linear · full rotation</span></div>
+        <div class="sp-p">Two desynced loops keep it from visibly repeating. Soft via 12–16px blur.</div></div>
+      <div class="sp"><div class="sp-t">Texture overlay drifts counter to the field <span class="sp-v">27s · alternate-reverse</span></div></div>
+      <div class="sp"><div class="sp-t">Continuous + ambient — never tied to interaction; disabled under prefers-reduced-motion</div></div>
+    </div></div></div>
+  </div>
+  <div class="acc">
+    <button class="acc-head"><span>02 · Expand / collapse</span><svg class="chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg></button>
+    <div class="acc-body"><div class="acc-inner"><div class="spec">
+      <div class="sp"><div class="sp-t">Container 48 → 153px <span class="sp-v">420ms · cubic-bezier(0.32, 0.72, 0, 1)</span> · collapse 360ms</div>
+        <div class="sp-p">Identical choreography to V1: collapsed row blurs out (120ms), header in (+100ms), rows stagger in (45ms). Background field keeps drifting through the morph.</div></div>
+      <div class="sp"><div class="sp-t">Persistent live indicator — anchored, breathing; does not move on expand/collapse</div></div>
+    </div></div></div>
+  </div>
+  <div class="acc">
+    <button class="acc-head"><span>03 · Live signals</span><svg class="chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg></button>
+    <div class="acc-body"><div class="acc-inner"><div class="spec">
+      <div class="sp"><div class="sp-t">Green live dot breathes <span class="sp-v">2.6s · ease-in-out · scale 0.82↔1.12 + green glow</span></div></div>
+      <div class="sp"><div class="sp-t">HR &amp; Steps refresh every 5s with a blur morph <span class="sp-v">blur 3px → swap → ease back, 220ms</span></div>
+        <div class="sp-p">HR shows zone context ("ZONE 3 • 120 BPM") in the expanded view.</div></div>
+    </div></div></div>
+  </div>
+  <div class="acc">
+    <button class="acc-head"><span>Tokens — delta from V1</span><svg class="chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg></button>
+    <div class="acc-body"><div class="acc-inner"><div class="spec">
+      <div class="sp"><div class="sp-t">Background: mint #DEFFE5 + liquid-metal field (was dark holographic gradient)</div></div>
+      <div class="sp"><div class="sp-t">Ink: black #0A0A0A · icons brightness(0) · dividers #000 @16% (was white on dark)</div></div>
+      <div class="sp"><div class="sp-t">Live dot #15B364 green (was #00FFC0) · expanded HR adds ZONE 3 context</div></div>
+      <div class="sp"><div class="sp-t">Geometry unchanged: 370w · r12 · 48h collapsed · 153h expanded</div></div>
+    </div></div></div>
+  </div>
+</template>
+
+<template id="spec-activity-detection">
+  <div class="acc open">
+    <button class="acc-head"><span>01 · Confirm (✓) — three styles</span><svg class="chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg></button>
+    <div class="acc-body"><div class="acc-inner"><div class="spec">
+      <div class="sp"><div class="sp-t">No artificial loader — confirmation is immediate &amp; optimistic, then the row records.</div>
+        <div class="sp-p">All three draw the checkmark (stroke 300ms ease-out) and the ✗ collapses away (scale 0.4 + fade). They differ only in the confirm flourish below.</div></div>
+      <div class="sp"><div class="sp-t">A · Stamp <span class="sp-v">button springs 0.8→1.14→1 (420ms · cubic-bezier(0.34,1.56,0.64,1)) + fills green + check draws</span></div>
+        <div class="sp-p">A satisfying press-and-stamp. The overshoot is the delight.</div></div>
+      <div class="sp"><div class="sp-t">B · Ripple <span class="sp-v">green wash expands from the ✓ across the row via clip-path circle 0→135% (560ms)</span></div>
+        <div class="sp-p">The confirmation reads as a touch radiating outward; the wash recedes as the row commits.</div></div>
+      <div class="sp"><div class="sp-t">C · Glide <span class="sp-v">row lifts translateY -6 · scale 1.03 + shadow (260ms spring), then glides down into the list</span></div>
+        <div class="sp-p">Most spatial — the card detaches, confirms, then settles into place with a spring.</div></div>
+    </div></div></div>
+  </div>
+  <div class="acc">
+    <button class="acc-head"><span>02 · Records into the list</span><svg class="chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg></button>
+    <div class="acc-body"><div class="acc-inner"><div class="spec">
+      <div class="sp"><div class="sp-t">After a short flourish (~340–380ms) the row spring-glides from Detected → top of Recorded <span class="sp-v">540ms · cubic-bezier(0.34,1.32,0.5,1)</span></div>
+        <div class="sp-p">FLIP — every row animates its position delta together, so the gap closes and the list reflows as one. Spring curve gives a gentle landing overshoot.</div></div>
+      <div class="sp"><div class="sp-t">On landing the card de-elevates (filled → borderless, 360ms), "?" dissolves out (fade + 2px blur + width collapse), ✓/✗ cross-fade to a chevron</div></div>
+      <div class="sp"><div class="sp-t">Green check badge pops onto the icon <span class="sp-v">520ms · overshoot scale 0→1.28→1 + slight rotate, delay 120ms</span></div>
+        <div class="sp-p">Lands just after the card settles. It's the persistent "recorded" marker on every confirmed activity.</div></div>
+      <div class="sp"><div class="sp-t">Where backend sync exists, keep it invisible: confirm optimistically, reconcile silently; only surface a quiet revert + toast on failure (out of scope here).</div></div>
+    </div></div></div>
+  </div>
+  <div class="acc">
+    <button class="acc-head"><span>03 · Dismiss (✗)</span><svg class="chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg></button>
+    <div class="acc-body"><div class="acc-inner"><div class="spec">
+      <div class="sp"><div class="sp-t">Row fades + slides out <span class="sp-v">translateX 28 · scale 0.9 · 3px blur · opacity → 0, 280ms ease-out</span></div>
+        <div class="sp-p">Blur masks the exit so it reads as "gone" rather than just transparent.</div></div>
+      <div class="sp"><div class="sp-t">Remaining rows close the gap; a past row promotes into view with a fade-up <span class="sp-v">460ms · cubic-bezier(0.22,1,0.36,1)</span></div></div>
+    </div></div></div>
+  </div>
+  <div class="acc">
+    <button class="acc-head"><span>04 · Show more / less</span><svg class="chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg></button>
+    <div class="acc-body"><div class="acc-inner"><div class="spec">
+      <div class="sp"><div class="sp-t">Only 3 rows show at rest; the rest (here, 4 past activities) live under "Show more".</div></div>
+      <div class="sp"><div class="sp-t">Fold expands height via grid-rows 0fr → 1fr <span class="sp-v">460ms · cubic-bezier(0.32,0.72,0,1)</span></div>
+        <div class="sp-p">Smoother + interruptible vs animating max-height to a guessed value.</div></div>
+      <div class="sp"><div class="sp-t">Revealed rows fade + rise in, staggered <span class="sp-v">280ms · 45ms apart</span></div></div>
+      <div class="sp"><div class="sp-t">Toggle caret flips 180° <span class="sp-v">320ms</span> · label swaps Show more ⇄ Show less</div></div>
+      <div class="sp"><div class="sp-t">Recorded rows carry the right-facing disclosure caret &amp; a neutral gray icon tile (vs the colored detection tile).</div></div>
+    </div></div></div>
+  </div>
+  <div class="acc">
+    <button class="acc-head"><span>Tokens</span><svg class="chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg></button>
+    <div class="acc-body"><div class="acc-inner"><div class="spec">
+      <div class="sp"><div class="sp-t">Pending row: white 95% · shadow 0 1 15 rgba(0,0,0,.05) · r12 — Recorded row: transparent + 1px rgba(0,0,0,.05)</div></div>
+      <div class="sp"><div class="sp-t">✗ 32px circle border #D4D4D8 · ✓ 32px #E5FBEF / border #86EFAC · badge #16A34A</div></div>
+      <div class="sp"><div class="sp-t">Icon tiles 40px r8: movement #FFEFE7/#FF6E35 · sleep rgba(1,115,118,.1)/#017376 · amber #f1a000</div></div>
+      <div class="sp"><div class="sp-t">Type: title TWK Everett 14 (Inter fallback) · meta JetBrains Mono 11 #A1A1AA · pts JetBrains Mono 12</div></div>
+    </div></div></div>
+  </div>
+</template>
+
+<template id="spec-battery-low">
+  <div class="acc open">
+    <button class="acc-head"><span>01 · Card enters</span><svg class="chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg></button>
+    <div class="acc-body"><div class="acc-inner"><div class="spec">
+      <div class="sp"><div class="sp-t">Drops in from above: translateY -18 → 0 · scale 0.94 → 1 · fade <span class="sp-v">560ms · cubic-bezier(0.34,1.56,0.64,1)</span></div>
+        <div class="sp-p">Slight overshoot so it settles like a real notification, not a hard cut.</div></div>
+    </div></div></div>
+  </div>
+  <div class="acc">
+    <button class="acc-head"><span>02 · Ring ripple → calm</span><svg class="chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg></button>
+    <div class="acc-body"><div class="acc-inner"><div class="spec">
+      <div class="sp"><div class="sp-t">3 concentric ripples emanate from the ring <span class="sp-v">2.2s loop · 0.73s stagger · scale 0.55→1.95, fade out</span></div>
+        <div class="sp-p">Subtle — peak opacity ~0.5. Ring color = variant (#FFBD3C amber / #FE4145 red).</div></div>
+      <div class="sp"><div class="sp-t">After ~4s it slows down <span class="sp-v">ripple + glow durations stretch 2.2s → 5s</span></div>
+        <div class="sp-p">Draws the eye on arrival, then recedes to ambient so it doesn't nag.</div></div>
+      <div class="sp"><div class="sp-t">Outer glow breathes throughout <span class="sp-v">opacity 0.14 ↔ 0.30</span></div></div>
+    </div></div></div>
+  </div>
+  <div class="acc">
+    <button class="acc-head"><span>03 · Dismiss → merge into menu</span><svg class="chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg></button>
+    <div class="acc-body"><div class="acc-inner"><div class="spec">
+      <div class="sp"><div class="sp-t">Tap ✕ → card collapses to a coin: width 370 → 52px, radius → 50%, text + ✕ fade <span class="sp-v">380ms · cubic-bezier(0.32,0.72,0,1)</span></div>
+        <div class="sp-p">Collapses from the right toward the ring, so the ring becomes the coin.</div></div>
+      <div class="sp"><div class="sp-t">Coin flies to the hamburger: translate(Δ to menu) + scale → 0.18 + fade <span class="sp-v">500ms · cubic-bezier(0.5,0,0.75,0)</span></div>
+        <div class="sp-p">Ease-in (accelerate) so it reads as being pulled into the menu. Δ measured live from coin-center → hamburger-center.</div></div>
+      <div class="sp"><div class="sp-t">Hamburger reacts on arrival: scale pop 1→1.18→1 + the red dot pulses <span class="sp-v">460ms · spring</span></div>
+        <div class="sp-p">Confirms the notification was filed into the menu.</div></div>
+    </div></div></div>
+  </div>
+  <div class="acc">
+    <button class="acc-head"><span>Tokens</span><svg class="chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg></button>
+    <div class="acc-body"><div class="acc-inner"><div class="spec">
+      <div class="sp"><div class="sp-t">Card 370 × 48 · r26 · dark radial gradient (#303030 → #211818 → #190c0c → #110000)</div></div>
+      <div class="sp"><div class="sp-t">Ring 56.7px outer glow (1px, 20%) + 40px inner (1px, 60%) · matte-grey battery body (PNG) · charging bolt masked in variant color</div></div>
+      <div class="sp"><div class="sp-t">Type: heading TWK Everett 14 #fff · sub 11 #D4D4D8 (Inter fallback) · ✕ white</div></div>
+      <div class="sp"><div class="sp-t">Variants: &lt; 30% amber #FFBD3C · &lt; 10% red #FE4145 (ring, bolt, ripple)</div></div>
+    </div></div></div>
+  </div>
+</template>
+
+<template id="spec-stacked-notifications">
+  <div class="acc open">
+    <button class="acc-head"><span>01 · The stack</span><svg class="chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg></button>
+    <div class="acc-body"><div class="acc-inner"><div class="spec">
+      <div class="sp"><div class="sp-t">Cards stack by depth from a single source order <span class="sp-v">translateY +9px · scale −0.05 · opacity −0.22 per depth</span></div>
+        <div class="sp-p">transform-origin: top center, so each card behind insets at the sides and peeks below the front. Only the front card is interactive.</div></div>
+      <div class="sp"><div class="sp-t">Re-layout on any change <span class="sp-v">440ms · cubic-bezier(0.34,1.32,0.5,1)</span></div>
+        <div class="sp-p">Every card animates its depth delta together — promote / recede reads as one connected motion.</div></div>
+    </div></div></div>
+  </div>
+  <div class="acc">
+    <button class="acc-head"><span>02 · Dismissible — swipe / ✕</span><svg class="chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg></button>
+    <div class="acc-body"><div class="acc-inner"><div class="spec">
+      <div class="sp"><div class="sp-t">Drag follows the finger 1:1 with a slight rotate &amp; fade <span class="sp-v">rotate dx·0.02° · opacity → 0.35</span></div></div>
+      <div class="sp"><div class="sp-t">Commit on distance OR flick <span class="sp-v">|dx| &gt; 96px or velocity &gt; 0.4 px/ms</span></div>
+        <div class="sp-p">Momentum, not distance alone — a quick flick dismisses. Below threshold it springs back.</div></div>
+      <div class="sp"><div class="sp-t">Off either edge: translateX ±460 + rotate + fade <span class="sp-v">340ms · ease-out</span>, then the stack closes up</div></div>
+      <div class="sp"><div class="sp-t">✕ tap: collapse up + fade <span class="sp-v">translateY −10 · scale 0.92 · 300ms</span> (alternative to swipe)</div></div>
+    </div></div></div>
+  </div>
+  <div class="acc">
+    <button class="acc-head"><span>03 · Non-dismissible (firmware) → sent to back</span><svg class="chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg></button>
+    <div class="acc-body"><div class="acc-inner"><div class="spec">
+      <div class="sp"><div class="sp-t">No ✕ — it carries an action (Update) instead. A committed swipe does NOT remove it.</div></div>
+      <div class="sp"><div class="sp-t">Instead it moves to the back of the order &amp; glides to the last depth slot <span class="sp-v">440ms spring</span>; the others come forward</div>
+        <div class="sp-p">It can never be lost — it just yields, then resurfaces once the dismissible ones are cleared. A small "Sent to back" cue confirms it.</div></div>
+    </div></div></div>
+  </div>
+  <div class="acc">
+    <button class="acc-head"><span>Tokens</span><svg class="chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg></button>
+    <div class="acc-body"><div class="acc-inner"><div class="spec">
+      <div class="sp"><div class="sp-t">Card 370w · r16 · #EEE + 1px #fff border · shadow 0 2 7.5 rgba(0,0,0,.12) · inner wrapper rgba(255,255,255,.07)</div></div>
+      <div class="sp"><div class="sp-t">Thumbnail 56px r12 (ring render) · heading TWK Everett 14 #0F0F0F · sub 11 #52525B (Inter fallback)</div></div>
+      <div class="sp"><div class="sp-t">Action "Update" SF Pro Semibold 13 #1539F5 · ✕ muted 45%</div></div>
+    </div></div></div>
+  </div>
+</template>
+
+<script>
+  // ── Responsive: wrap each fixed-width mock so it scales to fit the viewport ──
+  (function () {
+    [['#lpCard',370], ['#biCard',370], ['#lpCardV2',370], ['#adCard',370], ['#batScreen',402], ['.nf-wrap',370]]
+      .forEach(([sel, mw]) => {
+        const el = document.querySelector(sel);
+        if (!el || el.parentElement.classList.contains('ix-fit')) return;
+        const fit = document.createElement('div');
+        fit.className = 'ix-fit';
+        fit.style.setProperty('--mw', mw + 'px');
+        el.parentNode.insertBefore(fit, el);
+        fit.appendChild(el);
+      });
+  })();
+
+  // ── Live Pill interaction ───────────────────
+  (function () {
+    const card = document.getElementById('lpCard');
+    if (!card) return;
+
+    function toggle() {
+      const expanded = card.dataset.state === 'expanded';
+      card.dataset.state = expanded ? 'collapsed' : 'expanded';
+      card.setAttribute('aria-expanded', String(!expanded));
+    }
+    card.addEventListener('click', toggle);
+    card.addEventListener('keydown', e => {
+      if (e.key === ' ' || e.key === 'Enter') { e.preventDefault(); toggle(); }
+    });
+    card.addEventListener('pointerdown', () => card.classList.add('pressed'));
+    ['pointerup', 'pointerleave', 'pointercancel'].forEach(ev =>
+      card.addEventListener(ev, () => card.classList.remove('pressed')));
+
+    const stage = card.closest('.ix-stage');
+    stage.querySelector('[data-seg="mode"]').addEventListener('click', e => {
+      const b = e.target.closest('button'); if (!b) return;
+      stage.querySelectorAll('[data-seg="mode"] button').forEach(x => x.classList.toggle('on', x === b));
+      card.dataset.mode = b.dataset.mode;
+    });
+    stage.querySelector('[data-seg="speed"]').addEventListener('click', e => {
+      const b = e.target.closest('button'); if (!b) return;
+      stage.querySelectorAll('[data-seg="speed"] button').forEach(x => x.classList.toggle('on', x === b));
+      card.style.setProperty('--speed', b.dataset.speed);
+    });
+    stage.querySelector('[data-replay]').addEventListener('click', () => {
+      const speed = +(card.style.getPropertyValue('--speed') || 1);
+      card.dataset.state = 'collapsed';
+      card.setAttribute('aria-expanded', 'false');
+      setTimeout(() => {
+        card.dataset.state = 'expanded';
+        card.setAttribute('aria-expanded', 'true');
+      }, 500 * speed);
+    });
+
+    // Live data feel — HR random-walks, steps tick up; values morph with a blur.
+    const fmt = n => n.toLocaleString('en-US');
+    let hr = 120, steps = 11489;
+    const hrEls = card.querySelectorAll('[data-live="hr"]');
+    const stepEls = card.querySelectorAll('[data-live="steps"]');
+    const nums = card.querySelectorAll('.lp-num');
+
+    function tickLive() {
+      if (card.dataset.mode === 'live' && !document.hidden) {
+        hr = 116 + Math.round(Math.random() * 10);      // 116–126 BPM
+        steps += 2 + Math.round(Math.random() * 13);    // creeps upward
+        nums.forEach(el => el.classList.add('flash'));   // blur out
+        setTimeout(() => {
+          hrEls.forEach(el => el.textContent = hr);
+          stepEls.forEach(el => el.textContent = fmt(steps));
+          nums.forEach(el => el.classList.remove('flash')); // blur back in
+        }, 150);
+      }
+      const speed = +(card.style.getPropertyValue('--speed') || 1);
+      setTimeout(tickLive, 5000 * speed);   // values change exactly 5s apart
+    }
+    setTimeout(tickLive, 5000);
+  })();
+
+  // ── Live Pill V2 (liquid metal) ─────────────
+  (function () {
+    const card = document.getElementById('lpCardV2');
+    if (!card) return;
+    const stage = card.closest('.ix-stage');
+
+    // Honor reduced-motion for the SVG (SMIL) liquid-metal animation
+    if (window.matchMedia && matchMedia('(prefers-reduced-motion: reduce)').matches) {
+      const svg = card.querySelector('.lp-lm');
+      if (svg && svg.pauseAnimations) svg.pauseAnimations();
+    }
+
+    function toggle() {
+      const expanded = card.dataset.state === 'expanded';
+      card.dataset.state = expanded ? 'collapsed' : 'expanded';
+      card.setAttribute('aria-expanded', String(!expanded));
+      stage.querySelectorAll('[data-seg="v2-state"] button')
+        .forEach(b => b.classList.toggle('on', b.dataset.state === card.dataset.state));
+    }
+    card.addEventListener('click', toggle);
+    card.addEventListener('keydown', e => {
+      if (e.key === ' ' || e.key === 'Enter') { e.preventDefault(); toggle(); }
+    });
+    card.addEventListener('pointerdown', () => card.classList.add('pressed'));
+    ['pointerup', 'pointerleave', 'pointercancel'].forEach(ev =>
+      card.addEventListener(ev, () => card.classList.remove('pressed')));
+
+    stage.querySelector('[data-seg="v2-state"]').addEventListener('click', e => {
+      const b = e.target.closest('button'); if (!b) return;
+      stage.querySelectorAll('[data-seg="v2-state"] button').forEach(x => x.classList.toggle('on', x === b));
+      card.dataset.state = b.dataset.state;
+      card.setAttribute('aria-expanded', String(b.dataset.state === 'expanded'));
+    });
+    stage.querySelector('[data-seg="v2-speed"]').addEventListener('click', e => {
+      const b = e.target.closest('button'); if (!b) return;
+      stage.querySelectorAll('[data-seg="v2-speed"] button').forEach(x => x.classList.toggle('on', x === b));
+      card.style.setProperty('--speed', b.dataset.speed);
+    });
+    stage.querySelector('[data-replay-v2]').addEventListener('click', () => {
+      const speed = +(card.style.getPropertyValue('--speed') || 1);
+      card.dataset.state = 'collapsed';
+      stage.querySelectorAll('[data-seg="v2-state"] button').forEach(x => x.classList.toggle('on', x.dataset.state === 'collapsed'));
+      setTimeout(() => {
+        card.dataset.state = 'expanded';
+        stage.querySelectorAll('[data-seg="v2-state"] button').forEach(x => x.classList.toggle('on', x.dataset.state === 'expanded'));
+      }, 500 * speed);
+    });
+
+    // Live value morph (same cadence as V1)
+    const fmt = n => n.toLocaleString('en-US');
+    let hr = 120, steps = 11489;
+    const hrEls = card.querySelectorAll('[data-live="hr"]');
+    const stepEls = card.querySelectorAll('[data-live="steps"]');
+    const nums = card.querySelectorAll('.lp-num');
+    function tick() {
+      if (!document.hidden) {
+        hr = 116 + Math.round(Math.random() * 10);
+        steps += 2 + Math.round(Math.random() * 13);
+        nums.forEach(el => el.classList.add('flash'));
+        setTimeout(() => {
+          hrEls.forEach(el => el.textContent = hr);
+          stepEls.forEach(el => el.textContent = fmt(steps));
+          nums.forEach(el => el.classList.remove('flash'));
+        }, 150);
+      }
+      const speed = +(card.style.getPropertyValue('--speed') || 1);
+      setTimeout(tick, 5000 * speed);
+    }
+    setTimeout(tick, 5000);
+  })();
+
+  // ── Bio Intelligence ────────────────────────
+  (function () {
+    const card = document.getElementById('biCard');
+    if (!card) return;
+    const stage = card.closest('.ix-stage');
+    const header = document.getElementById('biHeader');
+
+    function setState(s) {
+      card.dataset.state = s;
+      stage.querySelectorAll('[data-seg="bi-state"] button')
+        .forEach(b => b.classList.toggle('on', b.dataset.state === s));
+      if (s === 'expanded') goTo(0, false);
+    }
+    function toggle() { setState(card.dataset.state === 'expanded' ? 'collapsed' : 'expanded'); }
+
+    header.addEventListener('click', toggle);
+    header.addEventListener('keydown', e => {
+      if (e.key === ' ' || e.key === 'Enter') { e.preventDefault(); toggle(); }
+    });
+    stage.querySelector('[data-seg="bi-state"]').addEventListener('click', e => {
+      const b = e.target.closest('button'); if (b) setState(b.dataset.state);
+    });
+    stage.querySelector('[data-seg="bi-speed"]').addEventListener('click', e => {
+      const b = e.target.closest('button'); if (!b) return;
+      stage.querySelectorAll('[data-seg="bi-speed"] button').forEach(x => x.classList.toggle('on', x === b));
+      card.style.setProperty('--speed', b.dataset.speed);
+    });
+
+    // Empty state — rotate ghost questions with a blur morph
+    const QUESTIONS = [
+      'What should I do to improve my VO2 max?',
+      'Why is my sleep score lower this week?',
+      'How can I lower my resting heart rate?',
+      "What's driving my afternoon energy dips?",
+      'Should I train hard today or recover?',
+      'How is my stress trending this month?',
+      "What's affecting my HRV lately?",
+      'Is my glucose response improving?'
+    ];
+    const q = document.getElementById('biQ');
+    let qi = 0;
+    function rotateQ() {
+      const speed = +(card.style.getPropertyValue('--speed') || 1);
+      if (card.dataset.state === 'empty' && !document.hidden) {
+        q.classList.add('flash');
+        setTimeout(() => {
+          qi = (qi + 1) % QUESTIONS.length;
+          q.textContent = QUESTIONS[qi];
+          q.classList.remove('flash');
+        }, 280 * speed);
+      }
+      setTimeout(rotateQ, 3200 * speed);
+    }
+    setTimeout(rotateQ, 3200);
+
+    // Carousel — drag with momentum snap; dots + keyboard
+    const track = document.getElementById('biTrack');
+    const carousel = document.getElementById('biCarousel');
+    const dots = [...document.querySelectorAll('#biDots .bi-dot')];
+    const COUNT = dots.length;
+    const PITCH = 330;                 // slide 318 + 12 gap
+    let index = 0, dragging = false, startX = 0, startT = 0, baseX = 0, dx = 0, dragS = 1;
+
+    function place(x, animate) {
+      track.style.transition = animate
+        ? `transform calc(440ms * var(--speed)) var(--bi-ease)` : 'none';
+      track.style.transform = `translateX(${x}px)`;
+    }
+    function goTo(i, animate = true) {
+      index = Math.max(0, Math.min(COUNT - 1, i));
+      place(-index * PITCH, animate);
+      dots.forEach((d, n) => d.classList.toggle('on', n === index));
+    }
+
+    dots.forEach(d => d.addEventListener('click', () => goTo(+d.dataset.i)));
+    carousel.addEventListener('keydown', e => {
+      if (e.key === 'ArrowRight') { e.preventDefault(); goTo(index + 1); }
+      if (e.key === 'ArrowLeft')  { e.preventDefault(); goTo(index - 1); }
+    });
+
+    carousel.addEventListener('pointerdown', e => {
+      if (e.target.closest('.bi-act')) return;   // let action buttons handle their own press
+      dragging = true; startX = e.clientX; startT = e.timeStamp;
+      baseX = -index * PITCH; dx = 0;
+      dragS = (card.getBoundingClientRect().width / card.offsetWidth) || 1;   // fit-scale
+      carousel.setPointerCapture(e.pointerId);
+    });
+    carousel.addEventListener('pointermove', e => {
+      if (!dragging) return;
+      dx = (e.clientX - startX) / dragS;          // finger delta in the card's own px
+      let x = baseX + dx;
+      const min = -(COUNT - 1) * PITCH;
+      if (x > 0) x = x * 0.35;                       // rubber-band at edges
+      else if (x < min) x = min + (x - min) * 0.35;
+      place(x, false);
+    });
+    function endDrag(e) {
+      if (!dragging) return;
+      dragging = false;
+      const dt = e.timeStamp - startT;
+      const velocity = Math.abs(dx) / Math.max(dt, 1);   // px/ms
+      let target = index;
+      if (Math.abs(dx) > PITCH / 3 || velocity > 0.4) {
+        target = index + (dx < 0 ? 1 : -1);
+      }
+      goTo(target);
+    }
+    carousel.addEventListener('pointerup', endDrag);
+    carousel.addEventListener('pointercancel', endDrag);
+
+    setState('empty');
+  })();
+
+  // ── Activity Detection ──────────────────────
+  (function () {
+    const card = document.getElementById('adCard');
+    if (!card) return;
+    const stage = card.closest('.ix-stage');
+
+    const host = document.getElementById('adHost');
+    const fold = document.getElementById('adFold');
+    const foldInner = document.getElementById('adFoldInner');
+    const toggle = document.getElementById('adToggle');
+    const toggleLabel = document.getElementById('adToggleLabel');
+    const VISIBLE = 3;
+
+    const IMG = n => `<img src="assets/activity/icon-${n}.svg" alt="">`;
+    const CMARK = '<svg class="ad-cmark" viewBox="0 0 24 24"><path d="M20 6 9 17 4 12"/></svg>';
+    const BADGECHK = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>';
+
+    // 7 items — 3 detected (pending) then 4 recorded (past). Exact Figma icons.
+    const DATA = [
+      { id: 'evening-walk',  icon: 'walk',     ic: 'ic-move',  title: 'Evening Walk', pts: '+3',  meta: '25 MIN • 5:45 PM', rec: false },
+      { id: 'afternoon-nap', icon: 'nap',      ic: 'ic-sleep', title: 'Afternoon Nap', pts: '+3',  meta: '25 MIN • 6:30 PM – 6:55 PM', rec: false },
+      { id: 'outdoorsy',     icon: 'outdoors', ic: 'ic-move',  title: 'Outdoorsy day', pts: '+20', meta: 'STEPS 75% HIGHER THAN USUAL', rec: false },
+      { id: 'morning-walk',  icon: 'walk',     ic: 'ic-move',  title: 'Morning Walk', pts: '+5',  meta: '25 MIN • 6:30 – 6:40 AM', rec: true },
+      { id: 'power-nap',     icon: 'nap',      ic: 'ic-sleep', title: 'Power Nap',    pts: '+3',  meta: '20 MIN • 1:10 – 1:30 PM', rec: true },
+      { id: 'trail-run',     icon: 'outdoors', ic: 'ic-move',  title: 'Trail Run',    pts: '+18', meta: '40 MIN • 7:05 – 7:45 AM', rec: true },
+      { id: 'midday-walk',   icon: 'walk',     ic: 'ic-move',  title: 'Midday Walk',  pts: '+4',  meta: '18 MIN • 12:20 – 12:38 PM', rec: true }
+    ];
+
+    let rows = [];          // ordered array of row elements (pending first, recorded after)
+    let expanded = false;
+
+    function buildCard(d) {
+      const el = document.createElement('article');
+      el.className = 'ad-item' + (d.rec ? ' is-recorded' : '');
+      el.dataset.id = d.id;
+      el.innerHTML =
+        `<div class="ad-icon ${d.ic}">${IMG(d.icon)}<span class="ad-badge">${BADGECHK}</span></div>` +
+        `<div class="ad-body">` +
+          `<div class="ad-r1"><span class="ad-title">${d.title}<span class="ad-q">?</span></span><span class="ad-sep">•</span><span class="ad-pts">${IMG('bolt')}${d.pts}</span></div>` +
+          `<div class="ad-meta">${d.meta}</div>` +
+        `</div>` +
+        `<div class="ad-tail">` +
+          `<div class="ad-actions">` +
+            `<button class="ad-btn ad-x" aria-label="Dismiss">${IMG('x')}</button>` +
+            `<button class="ad-btn ad-check" aria-label="Confirm">${CMARK}</button>` +
+          `</div>` +
+          `<div class="ad-chevron">${IMG('chevron')}</div>` +
+        `</div>` +
+        `<div class="ad-ripple-clip"><div class="ad-ripple"></div></div>`;
+      return el;
+    }
+
+    // distribute the first VISIBLE rows to the host, the rest into the collapsible fold
+    function reflow() {
+      rows.forEach((el, i) => (i < VISIBLE ? host : foldInner).appendChild(el));
+      const extra = Math.max(0, rows.length - VISIBLE);
+      toggle.style.display = extra > 0 ? '' : 'none';
+      toggleLabel.textContent = expanded ? 'Show less' : `Show ${extra} more`;
+    }
+
+    function render() {
+      host.innerHTML = ''; foldInner.innerHTML = '';
+      rows = DATA.map(buildCard);
+      expanded = false;
+      card.dataset.expanded = 'false'; fold.dataset.open = 'false';
+      reflow();
+    }
+
+    const speed = () => +(card.style.getPropertyValue('--speed') || 1);
+
+    // FLIP across a DOM mutation: glide moved rows, fade-in rows promoted from the fold.
+    function animateReflow(mutate, dur, curve) {
+      const first = new Map();
+      rows.forEach(n => first.set(n, n.getBoundingClientRect()));
+      mutate();
+      const d = (dur || 480) * speed();
+      rows.forEach(n => {
+        const f = first.get(n);
+        const l = n.getBoundingClientRect();
+        const nowHidden = l.height < 1;
+        if (nowHidden) return;                       // slid into the collapsed fold — let it clip
+        const wasHidden = !f || f.height < 1;
+        if (wasHidden) {                             // promoted into view — enter
+          n.style.transition = 'none';
+          n.style.opacity = '0'; n.style.transform = 'translateY(10px)';
+          n.getBoundingClientRect();
+          requestAnimationFrame(() => {
+            n.style.transition = `opacity ${d}ms var(--ad-out), transform ${d}ms var(--ad-spring)`;
+            n.style.opacity = ''; n.style.transform = '';
+          });
+        } else {
+          const dx = f.left - l.left, dy = f.top - l.top;
+          if (!dx && !dy) return;
+          const s = (l.width / n.offsetWidth) || 1;   // undo any fit-scale on the wrapper
+          n.style.transition = 'none';
+          n.style.transform = `translate(${dx / s}px, ${dy / s}px)`;
+          n.getBoundingClientRect();
+          requestAnimationFrame(() => {
+            n.style.transition = `transform ${d}ms ${curve || 'var(--ad-spring)'}`;
+            n.style.transform = '';
+          });
+        }
+        n.addEventListener('transitionend', () => { n.style.transition = ''; n.style.transform = ''; n.style.opacity = ''; }, { once: true });
+      });
+    }
+
+    const HOLD = { A: 360, B: 380, C: 340 };
+
+    function confirmItem(item) {
+      if (item.classList.contains('is-confirming') || item.classList.contains('is-recorded')) return;
+      item.classList.add('is-confirming');
+      const hold = (HOLD[card.dataset.style] || 360) * speed();
+      setTimeout(() => {
+        animateReflow(() => {
+          item.classList.remove('is-confirming');
+          item.classList.add('is-recorded', 'just-recorded');
+          // move to the top of the recorded group (just after the last remaining pending row)
+          const i = rows.indexOf(item);
+          if (i > -1) rows.splice(i, 1);
+          const pend = rows.filter(r => !r.classList.contains('is-recorded')).length;
+          rows.splice(pend, 0, item);
+          reflow();
+        }, 540, 'var(--ad-spring)');
+        setTimeout(() => item.classList.remove('just-recorded'), 820 * speed());
+      }, hold);
+    }
+
+    function dismissItem(item) {
+      if (item.classList.contains('is-dismissing')) return;
+      item.classList.add('is-dismissing');
+      setTimeout(() => {
+        animateReflow(() => {
+          const i = rows.indexOf(item);
+          if (i > -1) rows.splice(i, 1);
+          item.remove();
+          reflow();
+        }, 460, 'var(--ad-out)');
+      }, 250 * speed());
+    }
+
+    function setExpanded(v) {
+      expanded = v;
+      card.dataset.expanded = String(v);
+      fold.dataset.open = String(v);
+      const extra = Math.max(0, rows.length - VISIBLE);
+      toggleLabel.textContent = v ? 'Show less' : `Show ${extra} more`;
+    }
+
+    card.addEventListener('click', e => {
+      const item = e.target.closest('.ad-item'); if (!item) return;
+      if (e.target.closest('.ad-check')) confirmItem(item);
+      else if (e.target.closest('.ad-x')) dismissItem(item);
+    });
+    toggle.addEventListener('click', () => setExpanded(!expanded));
+
+    stage.querySelector('[data-seg="ad-style"]').addEventListener('click', e => {
+      const b = e.target.closest('button'); if (!b) return;
+      stage.querySelectorAll('[data-seg="ad-style"] button').forEach(x => x.classList.toggle('on', x === b));
+      card.dataset.style = b.dataset.style;
+    });
+    stage.querySelector('[data-seg="ad-recolor"]').addEventListener('click', e => {
+      const b = e.target.closest('button'); if (!b) return;
+      stage.querySelectorAll('[data-seg="ad-recolor"] button').forEach(x => x.classList.toggle('on', x === b));
+      card.dataset.recolor = b.dataset.recolor;
+    });
+    stage.querySelector('[data-seg="ad-speed"]').addEventListener('click', e => {
+      const b = e.target.closest('button'); if (!b) return;
+      stage.querySelectorAll('[data-seg="ad-speed"] button').forEach(x => x.classList.toggle('on', x === b));
+      card.style.setProperty('--speed', b.dataset.speed);
+    });
+    stage.querySelector('[data-ad-reset]').addEventListener('click', render);
+
+    render();
+  })();
+
+  // ── Battery Low Notification ────────────────
+  (function () {
+    const screen = document.getElementById('batScreen');
+    if (!screen) return;
+    const stage = screen.closest('.ix-stage');
+    const slot = document.getElementById('batSlot');
+    const hamb = document.getElementById('batHamb');
+    let card = document.getElementById('batCard');
+    let calmTimer = null;
+    const speed = () => +(screen.style.getPropertyValue('--speed') || 1);
+
+    function startRipple() {
+      const ring = card.querySelector('.bat-ring');
+      ring.classList.remove('calm');
+      ring.dataset.rippling = 'true';
+      clearTimeout(calmTimer);
+      // play subtly for ~4s, then slow down (calm)
+      calmTimer = setTimeout(() => ring.classList.add('calm'), 4000 * speed());
+    }
+
+    function dismiss() {
+      if (card.dataset.dismissing) return;
+      card.dataset.dismissing = '1';
+      card.classList.add('collapsing');
+      card.style.borderRadius = '50%';
+      setTimeout(() => {
+        // fly the collapsed coin into the hamburger menu
+        const c = card.getBoundingClientRect();
+        const h = hamb.getBoundingClientRect();
+        const dx = (h.left + h.width / 2) - (c.left + c.width / 2);
+        const dy = (h.top + h.height / 2) - (c.top + c.height / 2);
+        const s = (screen.getBoundingClientRect().width / screen.offsetWidth) || 1;   // fit-scale
+        card.classList.add('merging');
+        card.style.transformOrigin = 'center';
+        card.style.transform = `translate(${dx / s}px, ${dy / s}px) scale(0.18)`;
+        // the menu reacts as it lands
+        setTimeout(() => hamb.classList.add('receiving'), 170 * speed());
+        setTimeout(() => { card.style.visibility = 'hidden'; hamb.classList.remove('receiving'); }, 340 * speed());
+      }, 210 * speed());
+    }
+
+    function replay() {
+      clearTimeout(calmTimer);
+      const fresh = card.cloneNode(true);
+      fresh.removeAttribute('style');
+      delete fresh.dataset.dismissing;
+      fresh.classList.remove('collapsing', 'merging');
+      fresh.classList.add('entering');
+      card.replaceWith(fresh);
+      card = fresh;
+      bindCard();
+      // sync variant + sub copy with current control
+      const v = stage.querySelector('[data-seg="bat-variant"] button.on').dataset.variant;
+      applyVariant(v);
+      fresh.addEventListener('animationend', () => fresh.classList.remove('entering'), { once: true });
+      startRipple();
+    }
+
+    function applyVariant(v) {
+      card.dataset.variant = v;
+      card.querySelector('.bat-sub').textContent = v === 'red' ? 'Less than 10% remaining' : 'Less than 30% remaining';
+    }
+
+    function bindCard() {
+      card.querySelector('.bat-x').addEventListener('click', dismiss);
+    }
+
+    bindCard();
+    card.addEventListener('animationend', () => card.classList.remove('entering'), { once: true });
+    startRipple();
+
+    stage.querySelector('[data-seg="bat-variant"]').addEventListener('click', e => {
+      const b = e.target.closest('button'); if (!b) return;
+      stage.querySelectorAll('[data-seg="bat-variant"] button').forEach(x => x.classList.toggle('on', x === b));
+      applyVariant(b.dataset.variant);
+    });
+    stage.querySelector('[data-seg="bat-speed"]').addEventListener('click', e => {
+      const b = e.target.closest('button'); if (!b) return;
+      stage.querySelectorAll('[data-seg="bat-speed"] button').forEach(x => x.classList.toggle('on', x === b));
+      screen.style.setProperty('--speed', b.dataset.speed);
+    });
+    stage.querySelector('[data-bat-replay]').addEventListener('click', replay);
+  })();
+
+  // ── Stacked Notifications ───────────────────
+  (function () {
+    const stack = document.getElementById('nfStack');
+    if (!stack) return;
+    const wrap = stack.closest('.nf-wrap');
+    const stage = wrap.closest('.ix-stage');
+    const toast = document.getElementById('nfToast');
+    const speed = () => +(wrap.style.getPropertyValue('--speed') || 1);
+
+    const RING = 'assets/notif/ring.png';
+    const XSVG = '<img src="assets/notif/icon-x.svg" alt="">';
+    const DATA = [
+      { id: 'fw',     type: 'firmware',    h: 'Firmware update available', s: 'Update to latest firmware' },
+      { id: 'batt',   type: 'dismissible', h: 'Battery low',               s: 'Less than 30% remaining' },
+      { id: 'sleep',  type: 'dismissible', h: 'Sleep synced',              s: "Last night's recovery is ready" },
+      { id: 'cycle',  type: 'dismissible', h: 'Cycle update',              s: "You've entered the luteal phase" }
+    ];
+
+    let order = [];   // array of card elements, front → back
+
+    function build() {
+      stack.innerHTML = '';
+      order = DATA.map(d => {
+        const el = document.createElement('article');
+        el.className = 'nf-card';
+        el.dataset.type = d.type; el.dataset.id = d.id;
+        el.innerHTML =
+          `<div class="nf-row">` +
+            `<div class="nf-left">` +
+              `<div class="nf-thumb"><img src="${RING}" alt=""></div>` +
+              `<div class="nf-msg"><div class="nf-h">${d.h}</div><div class="nf-s">${d.s}</div></div>` +
+            `</div>` +
+            `<div class="nf-ctl">` +
+              (d.type === 'firmware' ? `<button class="nf-update">Update</button>` : `<button class="nf-x" aria-label="Dismiss">${XSVG}</button>`) +
+            `</div>` +
+          `</div>`;
+        stack.appendChild(el);
+        return el;
+      });
+      layout(false);
+    }
+
+    // position every card by its depth in the stack
+    function layout(animate) {
+      const MAXV = 3;   // visible depth
+      order.forEach((el, depth) => {
+        el.classList.toggle('front', depth === 0);
+        el.classList.toggle('animating', !!animate);
+        if (!animate) el.style.transition = 'none';
+        const ty = depth * 9;
+        const sc = 1 - depth * 0.05;
+        const op = depth === 0 ? 1 : Math.max(0, 1 - depth * 0.22);
+        el.style.transform = `translateY(${ty}px) scale(${sc})`;
+        el.style.opacity = depth > MAXV ? '0' : String(op);
+        el.style.zIndex = String(100 - depth);
+        if (!animate) { el.getBoundingClientRect(); el.style.transition = ''; }
+      });
+    }
+
+    function frontEl() { return order[0]; }
+
+    function dismiss(el, dir) {
+      el.classList.add('leaving');
+      el.style.transform = `translateX(${dir * 460}px) rotate(${dir * 4}deg)`;
+      el.style.opacity = '0';
+      const done = () => { el.remove(); order = order.filter(x => x !== el); layout(true); };
+      el.addEventListener('transitionend', done, { once: true });
+    }
+
+    function sendToBack(el) {
+      // move to end of order, then re-layout so it glides to the back slot
+      order = order.filter(x => x !== el).concat(el);
+      layout(true);
+      toast.classList.add('show');
+      clearTimeout(sendToBack._t);
+      sendToBack._t = setTimeout(() => toast.classList.remove('show'), 1300 * speed());
+    }
+
+    // pointer drag on the front card
+    let dragging = false, startX = 0, startT = 0, dx = 0, active = null, dragS = 1;
+    stack.addEventListener('pointerdown', e => {
+      const el = e.target.closest('.nf-card');
+      if (!el || el !== frontEl()) return;
+      if (e.target.closest('.nf-update')) return;   // let the button handle taps
+      active = el; dragging = true; startX = e.clientX; startT = e.timeStamp; dx = 0;
+      dragS = (el.getBoundingClientRect().width / el.offsetWidth) || 1;   // fit-scale
+      el.classList.add('dragging');
+      el.setPointerCapture(e.pointerId);
+    });
+    stack.addEventListener('pointermove', e => {
+      if (!dragging) return;
+      dx = e.clientX - startX;
+      const local = dx / dragS;                      // keep the card under the finger when scaled
+      const fade = Math.max(0.35, 1 - Math.abs(dx) / 460);
+      active.style.transform = `translateX(${local}px) rotate(${local * 0.02}deg)`;
+      active.style.opacity = String(fade);
+    });
+    function endDrag(e) {
+      if (!dragging) return;
+      dragging = false;
+      const el = active; active = null;
+      el.classList.remove('dragging');
+      const dt = Math.max(1, e.timeStamp - startT);
+      const v = Math.abs(dx) / dt;                 // px/ms
+      const committed = Math.abs(dx) > 96 || v > 0.4;
+      if (!committed) { layout(true); return; }     // snap back
+      if (el.dataset.type === 'dismissible') dismiss(el, dx < 0 ? -1 : 1);
+      else sendToBack(el);                          // firmware: to the back
+    }
+    stack.addEventListener('pointerup', endDrag);
+    stack.addEventListener('pointercancel', endDrag);
+
+    // ✕ tap on dismissible cards
+    stack.addEventListener('click', e => {
+      const x = e.target.closest('.nf-x'); if (!x) return;
+      const el = x.closest('.nf-card');
+      el.classList.add('leaving');
+      el.style.transform = 'translateY(-10px) scale(0.92)';
+      el.style.opacity = '0';
+      el.addEventListener('transitionend', () => { el.remove(); order = order.filter(c => c !== el); layout(true); }, { once: true });
+    });
+
+    stage.querySelector('[data-seg="nf-speed"]').addEventListener('click', e => {
+      const b = e.target.closest('button'); if (!b) return;
+      stage.querySelectorAll('[data-seg="nf-speed"] button').forEach(x => x.classList.toggle('on', x === b));
+      wrap.style.setProperty('--speed', b.dataset.speed);
+    });
+    stage.querySelector('[data-nf-reset]').addEventListener('click', build);
+
+    build();
+  })();
+
+  // ── Spec modal ──────────────────────────────
+  (function () {
+    const modal = document.getElementById('specModal');
+    const body = document.getElementById('specBody');
+    let lastFocus = null;
+
+    const titleEl = document.getElementById('specModalTitle');
+    const subEl = modal.querySelector('.modal-head .sub');
+    function openSpec(btn) {
+      const key = btn.dataset.spec;
+      const tpl = document.getElementById('spec-' + key);
+      if (!tpl) return;
+      if (btn.dataset.title) titleEl.textContent = btn.dataset.title;
+      if (btn.dataset.sub) subEl.textContent = btn.dataset.sub;
+      body.innerHTML = '';
+      body.appendChild(tpl.content.cloneNode(true));
+      modal.classList.add('open');
+      modal.setAttribute('aria-hidden', 'false');
+      lastFocus = document.activeElement;
+      modal.querySelector('[data-close]').focus();
+    }
+    function close() {
+      modal.classList.remove('open');
+      modal.setAttribute('aria-hidden', 'true');
+      if (lastFocus) lastFocus.focus();
+    }
+
+    document.querySelectorAll('[data-spec]').forEach(b =>
+      b.addEventListener('click', () => openSpec(b)));
+    modal.addEventListener('click', e => {
+      if (e.target === modal || e.target.closest('[data-close]')) close();
+      const head = e.target.closest('.acc-head');
+      if (head) head.parentElement.classList.toggle('open');
+    });
+    document.addEventListener('keydown', e => {
+      if (e.key === 'Escape' && modal.classList.contains('open')) close();
+    });
+  })();
+</script>
+</body>
+</html>

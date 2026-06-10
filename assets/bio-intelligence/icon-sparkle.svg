@@ -1,0 +1,18 @@
+<svg preserveAspectRatio="none" width="100%" height="100%" overflow="visible" style="display: block;" viewBox="0 0 28 28" fill="none" xmlns="http://www.w3.org/2000/svg">
+<g id="Group" filter="url(#filter0_df_0_4)">
+<path id="Vector" d="M14 16.3333C15.2887 16.3333 16.3333 15.2887 16.3333 14C16.3333 12.7113 15.2887 11.6667 14 11.6667C12.7113 11.6667 11.6667 12.7113 11.6667 14C11.6667 15.2887 12.7113 16.3333 14 16.3333Z" fill="var(--fill-0, #396860)"/>
+</g>
+<defs>
+<filter id="filter0_df_0_4" x="0" y="0" width="28" height="28" filterUnits="userSpaceOnUse" color-interpolation-filters="sRGB">
+<feFlood flood-opacity="0" result="BackgroundImageFix"/>
+<feColorMatrix in="SourceAlpha" type="matrix" values="0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 127 0" result="hardAlpha"/>
+<feOffset/>
+<feGaussianBlur stdDeviation="5.83333"/>
+<feComposite in2="hardAlpha" operator="out"/>
+<feColorMatrix type="matrix" values="0 0 0 0 0.224 0 0 0 0 0.408 0 0 0 0 0.376 0 0 0 0.6 0"/>
+<feBlend mode="normal" in2="BackgroundImageFix" result="effect1_dropShadow_0_4"/>
+<feBlend mode="normal" in="SourceGraphic" in2="effect1_dropShadow_0_4" result="shape"/>
+<feGaussianBlur stdDeviation="0.777778" result="effect2_foregroundBlur_0_4"/>
+</filter>
+</defs>
+</svg>
