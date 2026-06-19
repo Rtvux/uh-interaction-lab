@@ -1307,10 +1307,15 @@
   .nv-wrap[data-cv="pulse"] .nv-tab.today[data-charge="charging"] .tt-ring { opacity: 0; }
   .nv-wrap[data-cv="pulse"] .nv-tab.today[data-charge="charging"] .tt-bolt { opacity: 1; transform: scale(1); }
   .nv-wrap[data-cv="pulse"] .nv-tab.today[data-charge="charging"] .tt-bolt svg { animation: ttBoltPulse calc(1.4s*var(--speed)) ease-in-out infinite; }
-  .nv-wrap[data-cv="pulse"] .nv-tab.today[data-charge="charging"] .tt-glow2 { opacity: 1; animation: ttGlowB calc(1.9s*var(--speed)) ease-in-out infinite; }
-  .nv-wrap[data-cv="pulse"] .nv-tab.today[data-charge="charging"] .tt-pulse { animation: ttPulseRing calc(1.9s*var(--speed)) ease-out infinite; }
+  .nv-wrap[data-cv="pulse"] .nv-tab.today[data-charge="charging"] .tt-glow2 { opacity: 1; animation: ttGlowB calc(1.9s*var(--speed)) ease-in-out 4 forwards; }
+  .nv-wrap[data-cv="pulse"] .nv-tab.today[data-charge="charging"] .tt-pulse { animation: ttPulseRing calc(1.9s*var(--speed)) ease-out 4 forwards; }
   .nv-wrap[data-cv="pulse"] .nv-tab.today[data-charge="charging"] .tt-pulse.p2 { animation-delay: calc(0.95s*var(--speed)); }
   @keyframes ttPulseRing { 0% { transform: scale(0.7); opacity: 0.6; } 100% { transform: scale(2.2); opacity: 0; } }
+  /* …after 4 pulses, settle to the green progress arc around the zap */
+  .nv-wrap[data-cv="pulse"] .nv-tab.today.settled .tt-pulse,
+  .nv-wrap[data-cv="pulse"] .nv-tab.today.settled .tt-glow2 { opacity: 0; transition: opacity 360ms var(--out); }
+  .nv-wrap[data-cv="pulse"] .nv-tab.today.settled .tt-track { opacity: 1; transition: opacity 340ms var(--out); }
+  .nv-wrap[data-cv="pulse"] .nv-tab.today.settled .tt-arc { opacity: 1; stroke: var(--charge); }
   @keyframes ttGlowB { 0%,100% { opacity: 0.35; transform: scale(0.9); } 50% { opacity: 0.85; transform: scale(1.18); } }
 
   /* D · TINT — keep the ring, fill the arc, + a very faint green pill tint & soft shimmer */
@@ -1392,8 +1397,8 @@
   .nv-wrap[data-cv="chrome"] .nv-tab.today[data-charge="charging"] .tt-ring { opacity: 0; }             /* ring → zap */
   .nv-wrap[data-cv="chrome"] .nv-tab.today[data-charge="charging"] .tt-bolt { opacity: 1; transform: scale(1); }
   .nv-wrap[data-cv="chrome"] .nv-tab.today[data-charge="charging"] .tt-bolt svg { animation: ttBoltPulse calc(1.4s*var(--speed)) ease-in-out infinite; }
-  /* the beautiful hand-off: zap springs in with an overshoot + green glow flash */
-  .nv-wrap[data-cv="chrome"] .nv-tab.today.zap-in .tt-bolt { animation: ttChromeBoltIn calc(0.56s*var(--speed)) cubic-bezier(0.22,1,0.36,1) both; }
+  /* the beautiful hand-off: zap springs in with an overshoot + green glow flash (shared by F·Chrome + G·Current) */
+  .nv-tab.today.zap-in .tt-bolt { animation: ttChromeBoltIn calc(0.56s*var(--speed)) cubic-bezier(0.22,1,0.36,1) both; }
   @keyframes ttChromeBoltIn {
     0%   { opacity: 0; transform: scale(0.55); filter: drop-shadow(0 0 5px rgba(30,154,85,0)); }
     55%  { opacity: 1; transform: scale(1.12); filter: drop-shadow(0 0 6px rgba(30,154,85,0.85)); }
@@ -1414,23 +1419,28 @@
   /* decoration layers (hidden until their concept is charging) */
   .tt-mag, .tt-comet { position: absolute; inset: 0; opacity: 0; pointer-events: none; }
   .tt-mag { display: grid; place-items: center; z-index: 0; }
-  .tt-comet { z-index: 4; }
+  .tt-comet { z-index: 4; transition: opacity 540ms var(--out), filter 540ms var(--out); }
   .tt-orb { position: absolute; left: 50%; top: 50%; width: 15px; height: 15px; margin: -7.5px 0 0 -7.5px;
     border-radius: 50%; opacity: 0; pointer-events: none; z-index: 1;
     background: radial-gradient(circle at 50% 42%, #c6ffdd 0%, var(--charge) 46%, rgba(30,154,85,0.34) 78%, transparent 100%);
-    box-shadow: 0 0 6px 1px rgba(30,154,85,0.5); }
+    box-shadow: 0 0 6px 1px rgba(30,154,85,0.5); transition: opacity 400ms var(--out), transform 400ms var(--out); }
 
   /* G · RIPPLE — MagSafe-style concentric rings emanate on connect (arc + ring glyph stay) */
   .nv-wrap[data-cv="ripple"] .nv-tab.today[data-charge="charging"] .tt-arc { stroke: var(--charge); }
   .nv-wrap[data-cv="ripple"] .nv-tab.today[data-charge="charging"] .tt-mag { opacity: 1; }
   .tt-mag::before, .tt-mag::after { content: ""; position: absolute; width: 18px; height: 18px; border-radius: 50%; border: 1.5px solid var(--charge); }
-  .nv-wrap[data-cv="ripple"] .nv-tab.today[data-charge="charging"] .tt-mag::before { animation: ttMagWave calc(2.3s*var(--speed)) var(--out) infinite; }
-  .nv-wrap[data-cv="ripple"] .nv-tab.today[data-charge="charging"] .tt-mag::after  { animation: ttMagWave calc(2.3s*var(--speed)) var(--out) infinite; animation-delay: calc(1.15s*var(--speed)); }
+  .nv-wrap[data-cv="ripple"] .nv-tab.today[data-charge="charging"] .tt-mag::before { animation: ttMagWave calc(2.3s*var(--speed)) var(--out) 3 forwards; }
+  .nv-wrap[data-cv="ripple"] .nv-tab.today[data-charge="charging"] .tt-mag::after  { animation: ttMagWave calc(2.3s*var(--speed)) var(--out) 3 forwards; animation-delay: calc(1.15s*var(--speed)); }
   @keyframes ttMagWave { 0% { transform: scale(0.5); opacity: 0; } 16% { opacity: 0.55; } 100% { transform: scale(2.0); opacity: 0; } }
 
   /* H · CURRENT — a glowing comet head orbits the ring with a trailing arc (arc + ring glyph stay) */
   .nv-wrap[data-cv="current"] .nv-tab.today[data-charge="charging"] .tt-arc { stroke: var(--charge); }
-  .nv-wrap[data-cv="current"] .nv-tab.today[data-charge="charging"] .tt-comet { opacity: 1; animation: ttSpin calc(1.5s*var(--speed)) linear infinite; }
+  .nv-wrap[data-cv="current"] .nv-tab.today[data-charge="charging"] .tt-comet { opacity: 1; animation: ttSpin calc(1.5s*var(--speed)) linear 5; }
+  /* …after 5 orbits, the comet diffuses out; ring → zap, progress arc stays */
+  .nv-wrap[data-cv="current"] .nv-tab.today.settled .tt-comet { opacity: 0; filter: blur(2.5px); }
+  .nv-wrap[data-cv="current"] .nv-tab.today.settled .tt-ring { opacity: 0; }
+  .nv-wrap[data-cv="current"] .nv-tab.today.settled .tt-bolt { opacity: 1; transform: scale(1); }
+  .nv-wrap[data-cv="current"] .nv-tab.today.settled .tt-bolt svg { animation: ttBoltPulse calc(1.4s*var(--speed)) ease-in-out infinite; }
   .tt-comet::before { content: ""; position: absolute; left: 50%; top: 50%; width: 3.6px; height: 3.6px; margin: -1.8px 0 0 -1.8px;
     border-radius: 50%; background: #eafff2; transform: translateY(-11.16px); box-shadow: 0 0 6px 1.5px var(--charge), 0 0 3px #fff; }
   .tt-comet::after { content: ""; position: absolute; inset: 0; border-radius: 50%;
@@ -1442,8 +1452,15 @@
   /* I · ORB — a soft plasma orb fills the centre and breathes (ring glyph hidden) */
   .nv-wrap[data-cv="orb"] .nv-tab.today[data-charge="charging"] .tt-arc { stroke: var(--charge); }
   .nv-wrap[data-cv="orb"] .nv-tab.today[data-charge="charging"] .tt-ring { opacity: 0; }
-  .nv-wrap[data-cv="orb"] .nv-tab.today[data-charge="charging"] .tt-orb { opacity: 1; animation: ttOrbBreath calc(2.6s*var(--speed)) ease-in-out infinite; }
-  @keyframes ttOrbBreath { 0%,100% { transform: scale(0.8); opacity: 0.72; } 50% { transform: scale(1.06); opacity: 1; } }
+  .nv-wrap[data-cv="orb"] .nv-tab.today[data-charge="charging"] .tt-orb {
+    opacity: 1;
+    animation: ttOrbBreath calc(1s*var(--speed)) ease-in-out 3;   /* 3 breaths ≈ 3s, then hand off */
+  }
+  @keyframes ttOrbBreath { 0%,100% { transform: scale(1); opacity: 0.9; } 50% { transform: scale(1.13); opacity: 1; } }
+  /* …after ~3s the orb collapses into the zap; progress arc stays */
+  .nv-wrap[data-cv="orb"] .nv-tab.today.settled .tt-orb { opacity: 0; transform: scale(0.55); }
+  .nv-wrap[data-cv="orb"] .nv-tab.today.settled .tt-bolt { opacity: 1; transform: scale(1); }
+  .nv-wrap[data-cv="orb"] .nv-tab.today.settled .tt-bolt svg { animation: ttBoltPulse calc(1.4s*var(--speed)) ease-in-out infinite; }
 
   @media (prefers-reduced-motion: reduce) {
     .tt-mag::before, .tt-mag::after, .tt-comet, .tt-orb { animation: none !important; }
@@ -2180,14 +2197,13 @@
             <span class="ctl-label">Concept</span>
             <div class="seg" data-seg="nv-concept">
               <button data-cv="ring" class="on">A · Ring</button>
-              <button data-cv="liquid">B · Liquid</button>
-              <button data-cv="pulse">C · Pulse</button>
-              <button data-cv="tint">D · Tint</button>
-              <button data-cv="aurora">E · Aurora</button>
-              <button data-cv="chrome">F · Chrome</button>
-              <button data-cv="ripple">G · Ripple</button>
-              <button data-cv="current">H · Current</button>
-              <button data-cv="orb">I · Orb</button>
+              <button data-cv="pulse">B · Pulse</button>
+              <button data-cv="tint">C · Tint</button>
+              <button data-cv="aurora">D · Aurora</button>
+              <button data-cv="chrome">E · Chrome</button>
+              <button data-cv="ripple">F · Ripple</button>
+              <button data-cv="current">G · Current</button>
+              <button data-cv="orb">H · Orb</button>
             </div>
           </div>
           <div class="ctl-group">
@@ -2199,7 +2215,7 @@
             </div>
           </div>
         </div>
-        <div class="stage-hint">Default: black battery gauge (charge %). Plug in to charge — pick a concept: A arc fills · B liquid fills the pill · C energy pulses</div>
+        <div class="stage-hint">Default: black battery gauge (charge %). Plug in to charge — pick a concept (A–H). Looping concepts (Pulse, Ripple, Current, Orb) play a few times, then settle to the gauge.</div>
       </div>
     </div>
   </section>
@@ -2479,21 +2495,14 @@
     </div></div></div>
   </div>
   <div class="acc">
-    <button class="acc-head"><span>B · Liquid</span><svg class="chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg></button>
+    <button class="acc-head"><span>B · Pulse</span><svg class="chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg></button>
     <div class="acc-body"><div class="acc-inner"><div class="spec">
-      <div class="sp"><div class="sp-t">The white pill fills with green liquid from the bottom <span class="sp-v">height 60% → 80%</span>, gentle slosh on the surface <span class="sp-v">2.4s ease-in-out alternate</span></div>
-        <div class="sp-p">Liquid clipped to the capsule; ⚡ + label go white for contrast, soft inset glow. The arc fades while charging.</div></div>
+      <div class="sp"><div class="sp-t">Energy rings radiate from the zap <b>4 times</b>, then settle to the green progress arc <span class="sp-v">scale 0.7→2.2, 1.9s ease-out · 2 rings, 0.95s apart</span></div>
+        <div class="sp-p">The ⚡ shows throughout; after 4 pulses the rings + aura fade and the green arc <b>draws in</b> (empty → level) around the zap — energy transfer resolving into a precise gauge.</div></div>
     </div></div></div>
   </div>
   <div class="acc">
-    <button class="acc-head"><span>C · Pulse</span><svg class="chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg></button>
-    <div class="acc-body"><div class="acc-inner"><div class="spec">
-      <div class="sp"><div class="sp-t">Energy rings radiate outward from the icon <span class="sp-v">scale 0.7→2.2, 1.9s ease-out · 2 rings, 0.95s apart</span> over a breathing green aura</div>
-        <div class="sp-p">Ambient "it's charging" cue — reads as active energy transfer rather than a precise level.</div></div>
-    </div></div></div>
-  </div>
-  <div class="acc">
-    <button class="acc-head"><span>D · Tint</span><svg class="chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg></button>
+    <button class="acc-head"><span>C · Tint</span><svg class="chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg></button>
     <div class="acc-body"><div class="acc-inner"><div class="spec">
       <div class="sp"><div class="sp-t">Ring glyph stays as-is; the green arc fills around it (like A) <span class="sp-v">arc #0F0F0F → #1E9A55</span></div></div>
       <div class="sp"><div class="sp-t">The pill picks up a very faint green tint <span class="sp-v">#fff → #EEF9F1, 380ms ease-out</span></div></div>
@@ -2502,7 +2511,7 @@
     </div></div></div>
   </div>
   <div class="acc">
-    <button class="acc-head"><span>E · Aurora</span><svg class="chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg></button>
+    <button class="acc-head"><span>D · Aurora</span><svg class="chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg></button>
     <div class="acc-body"><div class="acc-inner"><div class="spec">
       <div class="sp"><div class="sp-t">A faint green gradient flows inside the pill while charging <span class="sp-v">3 soft radial greens · drift+scale+rotate · 6s ease-in-out alternate</span></div>
         <div class="sp-p">Continuous, ambient aurora (clipped to the capsule, blurred) — replaces D's sweep with living motion.</div></div>
@@ -2510,7 +2519,7 @@
     </div></div></div>
   </div>
   <div class="acc">
-    <button class="acc-head"><span>F · Chrome</span><svg class="chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg></button>
+    <button class="acc-head"><span>E · Chrome</span><svg class="chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg></button>
     <div class="acc-body"><div class="acc-inner"><div class="spec">
       <div class="sp"><div class="sp-t">Plays <b>once</b> on connect (~3s), then a spring hand-off to the green zap + progress arc <span class="sp-v">~3s, then zap-in</span></div>
         <div class="sp-p">A real <b>WebGL</b> liquid-mercury surface pours in from the side (smooth, no noise) over ~1.4s and holds full to ~3s, then drains+shrinks as the green ⚡ bolt springs in with an overshoot and a brief green glow flash, leaving the progress arc — the steady charge state.</div></div>
@@ -2520,26 +2529,26 @@
     </div></div></div>
   </div>
   <div class="acc">
-    <button class="acc-head"><span>G · Ripple</span><svg class="chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg></button>
+    <button class="acc-head"><span>F · Ripple</span><svg class="chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg></button>
     <div class="acc-body"><div class="acc-inner"><div class="spec">
-      <div class="sp"><div class="sp-t">MagSafe-style: concentric green rings emanate from the icon while charging <span class="sp-v">2 rings · 2.3s loop · 1.15s stagger</span></div>
-        <div class="sp-p">The ring glyph + green progress arc stay as the gauge; two rings expand (scale 0.5 → 2.0) and fade out on an ease-out curve, offset by half the cycle so one is always emanating. Reads as "connected / wirelessly charging."</div></div>
-      <div class="sp"><div class="sp-t">Production: fire one ring burst on connect (haptic), then loop gently; pair with the system charge chip.</div></div>
+      <div class="sp"><div class="sp-t">MagSafe-style: concentric green rings emanate from the icon <b>3 times</b>, then stop <span class="sp-v">2 rings · 2.3s · 1.15s stagger</span></div>
+        <div class="sp-p">The ring glyph + green progress arc stay as the gauge; two rings expand (scale 0.5 → 2.0) and fade on an ease-out curve, offset by half a cycle. After 3 emanations they stop, leaving the steady gauge. Reads as "connected."</div></div>
+      <div class="sp"><div class="sp-t">Production: fire the burst on connect (haptic); pair with the system charge chip.</div></div>
     </div></div></div>
   </div>
   <div class="acc">
-    <button class="acc-head"><span>H · Current</span><svg class="chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg></button>
+    <button class="acc-head"><span>G · Current</span><svg class="chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg></button>
     <div class="acc-body"><div class="acc-inner"><div class="spec">
-      <div class="sp"><div class="sp-t">A glowing comet head orbits the ring with a fading trail <span class="sp-v">1.5s / rev · linear</span></div>
-        <div class="sp-p">A bright dot (white-green, glowing) rides the gauge circumference; a conic-gradient tail (~78°) fades behind it. The green progress arc + ring glyph stay underneath. Reads as literal current flowing in.</div></div>
+      <div class="sp"><div class="sp-t">A glowing comet head orbits the ring <b>5 times</b>, then diffuses out — leaving the progress arc + zap <span class="sp-v">1.5s / rev · linear</span></div>
+        <div class="sp-p">A bright dot (white-green, glowing) with a conic tail (~78°) rides the gauge circumference. After 5 orbits it blurs + fades out, the ring glyph swaps to the ⚡ (spring-in), and the green progress arc remains. Reads as current flowing in, then resolved.</div></div>
       <div class="sp"><div class="sp-t">Trail = conic gradient masked to the arc radius (r 11.16); head = blurred specular dot. Production: optionally speed the orbit with charge rate.</div></div>
     </div></div></div>
   </div>
   <div class="acc">
-    <button class="acc-head"><span>I · Orb</span><svg class="chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg></button>
+    <button class="acc-head"><span>H · Orb</span><svg class="chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg></button>
     <div class="acc-body"><div class="acc-inner"><div class="spec">
-      <div class="sp"><div class="sp-t">A soft plasma orb fills the centre and gently breathes <span class="sp-v">scale 0.8 ↔ 1.06 · 2.6s ease-in-out</span></div>
-        <div class="sp-p">The ring glyph is replaced by a radial-gradient green orb (bright core → brand green → soft falloff) that breathes in scale + opacity; the green progress arc rings it. Bio/metabolic feel — alive rather than mechanical.</div></div>
+      <div class="sp"><div class="sp-t">A soft plasma orb breathes <b>3 times (~3s)</b>, then collapses into the green zap + progress arc <span class="sp-v">breath scale 1 ↔ 1.13 · 1s × 3</span></div>
+        <div class="sp-p">The ring glyph is replaced by a radial-gradient green orb (bright core → brand green → soft falloff) that breathes 3×; after ~3s it shrinks + fades as the ⚡ springs in, leaving the green progress arc. Bio/metabolic intro resolving to the steady gauge.</div></div>
       <div class="sp"><div class="sp-t">Production: tie the breathing rate to a real signal (e.g. charge rate or HR) for a living indicator.</div></div>
     </div></div></div>
   </div>
@@ -3472,6 +3481,30 @@
       }, 3000 * speed());
     }
 
+    // Concepts that loop N times on connect, then settle to the green progress arc (+ zap)
+    let settleTimer = 0;
+    const SETTLE_AFTER = { pulse: 4 * 1.9, current: 5 * 1.5, orb: 3 };   // seconds until hand-off to the zap
+    function drawArcIn() {
+      cancelAnimationFrame(raf); pct = TARGET;
+      arc.style.transition = 'none';
+      arc.style.strokeDashoffset = String(C);
+      void arc.offsetWidth;
+      arc.style.transition = 'stroke-dashoffset ' + (680 * speed()) + 'ms cubic-bezier(0.22,1,0.36,1), opacity ' + (340 * speed()) + 'ms ease-out, stroke ' + (340 * speed()) + 'ms ease-out';
+      setArc(pct);
+      setTimeout(() => { arc.style.transition = ''; }, 760 * speed());
+    }
+    function scheduleSettle() {
+      clearTimeout(settleTimer);
+      const cv = wrap.dataset.cv;
+      if (!charging || !(cv in SETTLE_AFTER)) return;
+      settleTimer = setTimeout(() => {
+        pill.classList.add('settled');
+        if (cv === 'pulse') drawArcIn();            // pulse: draw the arc in around the existing zap
+        else { pill.classList.add('zap-in');        // current: ring → zap springs in (arc already filled)
+               setTimeout(() => pill.classList.remove('zap-in'), 760 * speed()); }
+      }, SETTLE_AFTER[cv] * 1000 * speed());
+    }
+
     function plugIn() {
       if (charging) return;
       charging = true;
@@ -3481,6 +3514,7 @@
       setTimeout(() => icon.classList.remove('connect'), 650 * speed());
       setLiquid(pct);
       playChromeIntro();
+      scheduleSettle();
       const from = pct, span = TARGET - from, dur = 3000 * speed(), t0 = performance.now();
       (function step(now) {
         const t = Math.min(1, (now - t0) / dur);
@@ -3496,7 +3530,7 @@
       icon.classList.remove('connect');
       arc.style.transition = '';
       pct = START; setArc(pct); setLiquid(0);
-      pill.classList.remove('chrome-intro', 'zap-in'); clearTimeout(chromeTimer);
+      pill.classList.remove('chrome-intro', 'zap-in', 'settled'); clearTimeout(chromeTimer); clearTimeout(settleTimer);
       btn.textContent = 'Plug in to charge';
     }
 
@@ -3505,8 +3539,10 @@
       const b = e.target.closest('button'); if (!b) return;
       stage.querySelectorAll('[data-seg="nv-concept"] button').forEach(x => x.classList.toggle('on', x === b));
       wrap.dataset.cv = b.dataset.cv;            // switch concept live
+      pill.classList.remove('chrome-intro', 'zap-in', 'settled'); clearTimeout(chromeTimer); clearTimeout(settleTimer);
+      if (charging) { arc.style.transition = ''; setArc(pct); }   // restore arc to the live level for the new concept
       if (b.dataset.cv === 'chrome') playChromeIntro();
-      else { pill.classList.remove('chrome-intro', 'zap-in'); clearTimeout(chromeTimer); }
+      else scheduleSettle();
     });
     stage.querySelector('[data-seg="nv-speed"]').addEventListener('click', e => {
       const b = e.target.closest('button'); if (!b) return;
