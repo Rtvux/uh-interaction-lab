@@ -1,0 +1,10 @@
+<svg preserveAspectRatio="xMidYMid meet" overflow="visible" style="display: block;" viewBox="0 0 16.7273 16.7273" fill="none" xmlns="http://www.w3.org/2000/svg">
+<g id="semantics/products/ring" clip-path="url(#clip0_0_15)">
+<path id="icon" fill-rule="evenodd" clip-rule="evenodd" d="M8.36364 0C12.9827 0 16.7273 3.74453 16.7273 8.36364C16.7273 12.9827 12.9827 16.7273 8.36364 16.7273C3.74453 16.7273 0 12.9827 0 8.36364C0 3.74453 3.74453 0 8.36364 0ZM8.36364 1.67273C4.66835 1.67273 1.67273 4.66835 1.67273 8.36364C1.67273 12.0589 4.66835 15.0545 8.36364 15.0545C12.0589 15.0545 15.0545 12.0589 15.0545 8.36364C15.0545 4.66835 12.0589 1.67273 8.36364 1.67273ZM12.1268 13.3826C11.0785 14.1699 9.77557 14.6364 8.36364 14.6364C6.95178 14.6364 5.64887 14.1699 4.6006 13.3827L12.1268 13.3826Z" fill="var(--fill-0, black)"/>
+</g>
+<defs>
+<clipPath id="clip0_0_15">
+<rect width="16.7273" height="16.7273" fill="white"/>
+</clipPath>
+</defs>
+</svg>

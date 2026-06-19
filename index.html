@@ -218,6 +218,9 @@
   }
   .btn-ghost:hover { background: rgba(18,160,92,0.08); }
   .btn-ghost:active { transform: scale(0.96); }
+  .btn { background: var(--accent); border: 0; color: #fff; font-family: var(--mono); font-size: 10.5px; font-weight: 500; letter-spacing: 0.06em; text-transform: uppercase; padding: 9px 16px; cursor: pointer; border-radius: 999px; transition: filter .16s var(--ease-out), transform .14s var(--ease-out); }
+  .btn:hover { filter: brightness(1.06); }
+  .btn:active { transform: scale(0.96); }
 
   /* ── Spec modal ──────────────────────────── */
   .modal-backdrop {
@@ -1186,6 +1189,269 @@
     .ci-island { transition-duration: 200ms; }
     .ci-island[data-state="expanded"] .ci-glow { animation: none; opacity: 0.6; }
   }
+
+  /* ══════════════════════════════════════════
+     COMPONENT · Today-tab Ring Charging (interaction 08)
+     1:1 with Figma · Phoenix workspace · node 798-43626
+     The Today tab's ring icon becomes the charge gauge.
+     Plug-in: connected pop + ripple. Full: bloom + ✓.
+     ══════════════════════════════════════════ */
+  .nv-wrap {
+    --speed: 1;
+    --spring: cubic-bezier(0.34, 1.4, 0.5, 1);
+    --out: cubic-bezier(0.22, 1, 0.36, 1);
+    --charge: #1E9A55;
+    position: relative; width: 402px; padding: 56px 0 20px;
+    display: flex; justify-content: center;
+  }
+  /* Bar — exact: dark translucent fully-rounded pill, white border, soft shadow */
+  .nv-bar {
+    box-sizing: border-box; width: 370px; padding: 1px 5px;
+    display: flex; align-items: center; justify-content: space-between;
+    background: rgba(0,0,0,0.10);
+    border: 1px solid rgba(255,255,255,0.3);
+    border-radius: 9999px;
+    -webkit-backdrop-filter: blur(5px); backdrop-filter: blur(5px);
+    box-shadow: 0 8px 32px 0 rgba(0,0,0,0.12), 0 2px 8px 0 rgba(0,0,0,0.06);
+  }
+  .nv-tab {
+    flex: none; width: 72px; height: 48px; border-radius: 9999px;
+    display: flex; flex-direction: column; align-items: center; justify-content: center;
+    cursor: pointer; -webkit-tap-highlight-color: transparent;
+  }
+  .nv-ico { height: 24px; display: flex; align-items: center; justify-content: center; }
+  .nv-ico img { display: block; height: 16px; width: auto; }
+  .nv-tab:not(.today) .nv-ico { opacity: 0.4; }
+  .nv-lab { font-family: var(--mono); font-weight: 500; font-size: 10px; line-height: 14px; text-transform: uppercase; color: rgba(0,0,0,0.4); white-space: nowrap; }
+
+  /* Active Today pill — white, full-rounded, taller */
+  .nv-tab.today { position: relative; width: 72px; height: 56px; background: #fff; }
+  .nv-tab.today .nv-lab { color: #000; }
+
+  /* ── Ring icon = charge gauge (24px band around the 16.73px ring glyph) ── */
+  .tt-icon { position: relative; width: 24px; height: 24px; display: grid; place-items: center; }
+  .tt-ring { width: 16.73px; height: 16.73px; display: block; transition: opacity 240ms var(--out); }
+  .tt-prog { position: absolute; inset: 0; width: 24px; height: 24px; transform: rotate(-90deg); pointer-events: none; }
+  .tt-track, .tt-arc { fill: none; }
+  /* Battery gauge is ALWAYS shown. Default = black; turns green only while charging. */
+  .tt-track { stroke: rgba(0,0,0,0.10); stroke-width: 1.68; opacity: 1; }
+  .tt-arc {
+    stroke: #0f0f0f; stroke-width: 1.68; stroke-linecap: round;
+    stroke-dasharray: 70.12; stroke-dashoffset: 70.12; opacity: 1;
+    transition: stroke-dashoffset 140ms linear, stroke 320ms var(--out), filter 300ms var(--out);
+  }
+  .tt-center-glyph { position: absolute; inset: 0; display: grid; place-items: center; opacity: 0; transform: scale(0.4); transition: opacity 200ms var(--out), transform 280ms var(--spring); }
+  .tt-center-glyph svg { color: var(--charge); }
+  .tt-bolt svg { width: 9px; height: 13px; }
+  .tt-check svg { width: 11px; height: 11px; }
+  .tt-ripple { position: absolute; width: 24px; height: 24px; border-radius: 50%; border: 1.5px solid var(--charge); opacity: 0; pointer-events: none; }
+
+  /* ── Charging concepts — the Concept selector sets data-cv on .nv-wrap;
+     data-charge ("battery" | "charging") lives on the Today pill. ── */
+  @keyframes ttBoltPulse { 0%,100% { opacity: 0.55; } 50% { opacity: 1; } }
+  .tt-center-glyph { z-index: 3; }
+  .nv-tab.today .nv-lab { transition: color 280ms var(--out); }
+
+  /* A · RING — the gauge arc turns green & fills around the ring */
+  .nv-wrap[data-cv="ring"] .nv-tab.today[data-charge="charging"] .tt-arc { stroke: var(--charge); }
+  .nv-wrap[data-cv="ring"] .nv-tab.today[data-charge="charging"] .tt-ring { opacity: 0; }
+  .nv-wrap[data-cv="ring"] .nv-tab.today[data-charge="charging"] .tt-bolt { opacity: 1; transform: scale(1); }
+  .nv-wrap[data-cv="ring"] .nv-tab.today[data-charge="charging"] .tt-bolt svg { animation: ttBoltPulse calc(1.4s*var(--speed)) ease-in-out infinite; }
+
+  .tt-icon.connect { animation: ttPop calc(420ms*var(--speed)) var(--spring); }
+  .tt-icon.connect .tt-ripple { animation: ttRipple calc(620ms*var(--speed)) var(--out); }
+  .tt-icon.bloom .tt-ripple { animation: ttBloom calc(640ms*var(--speed)) var(--out); }
+  .tt-icon.bloom .tt-check { animation: ttPop calc(460ms*var(--speed)) var(--spring); }
+  @keyframes ttPop { 0%{transform:scale(0.9);} 45%{transform:scale(1.16);} 100%{transform:scale(1);} }
+  @keyframes ttRipple { 0%{transform:scale(0.7);opacity:0.7;} 100%{transform:scale(2.2);opacity:0;} }
+  @keyframes ttBloom { 0%{transform:scale(0.8);opacity:0.85;} 100%{transform:scale(2.9);opacity:0;} }
+
+  /* FAB — floats above the bar, right */
+  .nv-fab { position: absolute; right: 12px; bottom: 84px; width: 44px; height: 44px; border-radius: 50%; background: #fff; box-shadow: 0 6px 16px -4px rgba(0,0,0,0.22); display: grid; place-items: center; color: #0f0f0f; }
+  .nv-fab svg { width: 18px; height: 18px; }
+
+  @media (prefers-reduced-motion: reduce) {
+    .tt-icon.connect, .tt-icon.bloom .tt-ripple, .tt-icon.bloom .tt-check { animation: none !important; }
+    .tt-arc { transition: stroke-dashoffset 200ms linear, opacity 200ms ease; }
+  }
+
+  /* B · LIQUID — the pill fills with green liquid (gentle slosh) */
+  .nv-wrap[data-cv="liquid"] .nv-tab.today { overflow: hidden; }
+  .nv-wrap[data-cv="liquid"] .tt-icon, .nv-wrap[data-cv="liquid"] .nv-tab.today .nv-lab { position: relative; z-index: 2; }
+  .tl-glow { position: absolute; inset: 0; border-radius: inherit; box-shadow: inset 0 0 12px rgba(30,154,85,0.4); opacity: 0; z-index: 1; pointer-events: none; transition: opacity 320ms var(--out); }
+  .tl-liquid {
+    position: absolute; left: 0; right: 0; bottom: 0; height: 0; z-index: 0;
+    background: #1E9A55; opacity: 0; pointer-events: none;
+    transition: opacity 300ms var(--out);
+  }
+  .tl-liquid::before {
+    content: ""; position: absolute; left: -50%; right: -50%; top: -6px; height: 13px;
+    background: #1E9A55; border-radius: 50%;
+    animation: tlSlosh calc(2.4s*var(--speed)) ease-in-out infinite alternate;
+  }
+  @keyframes tlSlosh { from { transform: translateX(-10%) scaleY(0.7); } to { transform: translateX(10%) scaleY(1.15); } }
+  .nv-wrap[data-cv="liquid"] .nv-tab.today[data-charge="charging"] .tl-liquid { opacity: 0.92; }
+  .nv-wrap[data-cv="liquid"] .nv-tab.today[data-charge="charging"] .tl-glow { opacity: 1; }
+  .nv-wrap[data-cv="liquid"] .nv-tab.today[data-charge="charging"] .tt-arc,
+  .nv-wrap[data-cv="liquid"] .nv-tab.today[data-charge="charging"] .tt-track { opacity: 0; }
+  .nv-wrap[data-cv="liquid"] .nv-tab.today[data-charge="charging"] .tt-ring { opacity: 0; }
+  .nv-wrap[data-cv="liquid"] .nv-tab.today[data-charge="charging"] .tt-bolt { opacity: 1; transform: scale(1); }
+  .nv-wrap[data-cv="liquid"] .nv-tab.today[data-charge="charging"] .tt-bolt svg { color: #fff; animation: ttBoltPulse calc(1.4s*var(--speed)) ease-in-out infinite; }
+  .nv-wrap[data-cv="liquid"] .nv-tab.today[data-charge="charging"] .nv-lab { color: #fff; }
+
+  /* C · PULSE — energy rings radiate from the icon + a breathing aura */
+  .tt-glow2 { position: absolute; left: 50%; top: 50%; width: 30px; height: 30px; margin: -15px 0 0 -15px; border-radius: 50%; background: radial-gradient(circle, rgba(52,199,89,0.55), transparent 70%); opacity: 0; z-index: 0; pointer-events: none; }
+  .tt-pulse { position: absolute; left: 50%; top: 50%; width: 22px; height: 22px; margin: -11px 0 0 -11px; border-radius: 50%; border: 1.5px solid var(--charge); opacity: 0; z-index: 0; pointer-events: none; }
+  .nv-wrap[data-cv="pulse"] .nv-tab.today[data-charge="charging"] .tt-arc,
+  .nv-wrap[data-cv="pulse"] .nv-tab.today[data-charge="charging"] .tt-track { opacity: 0; }
+  .nv-wrap[data-cv="pulse"] .nv-tab.today[data-charge="charging"] .tt-ring { opacity: 0; }
+  .nv-wrap[data-cv="pulse"] .nv-tab.today[data-charge="charging"] .tt-bolt { opacity: 1; transform: scale(1); }
+  .nv-wrap[data-cv="pulse"] .nv-tab.today[data-charge="charging"] .tt-bolt svg { animation: ttBoltPulse calc(1.4s*var(--speed)) ease-in-out infinite; }
+  .nv-wrap[data-cv="pulse"] .nv-tab.today[data-charge="charging"] .tt-glow2 { opacity: 1; animation: ttGlowB calc(1.9s*var(--speed)) ease-in-out infinite; }
+  .nv-wrap[data-cv="pulse"] .nv-tab.today[data-charge="charging"] .tt-pulse { animation: ttPulseRing calc(1.9s*var(--speed)) ease-out infinite; }
+  .nv-wrap[data-cv="pulse"] .nv-tab.today[data-charge="charging"] .tt-pulse.p2 { animation-delay: calc(0.95s*var(--speed)); }
+  @keyframes ttPulseRing { 0% { transform: scale(0.7); opacity: 0.6; } 100% { transform: scale(2.2); opacity: 0; } }
+  @keyframes ttGlowB { 0%,100% { opacity: 0.35; transform: scale(0.9); } 50% { opacity: 0.85; transform: scale(1.18); } }
+
+  /* D · TINT — keep the ring, fill the arc, + a very faint green pill tint & soft shimmer */
+  .tt-shimmer { position: absolute; inset: 0; border-radius: inherit; overflow: hidden; opacity: 0; z-index: 1; pointer-events: none; transition: opacity 320ms var(--out); }
+  .tt-shimmer::before {
+    content: ""; position: absolute; top: -60%; left: -70%; width: 45%; height: 220%;
+    background: linear-gradient(90deg, transparent, rgba(30,154,85,0.16), transparent);
+    transform: translateX(0) rotate(18deg);
+  }
+  @keyframes ttShimmer { 0% { transform: translateX(0) rotate(18deg); } 100% { transform: translateX(420%) rotate(18deg); } }
+  .nv-wrap[data-cv="tint"] .nv-tab.today { overflow: hidden; }
+  .nv-wrap[data-cv="tint"] .tt-icon, .nv-wrap[data-cv="tint"] .nv-tab.today .nv-lab { position: relative; z-index: 2; }
+  .nv-wrap[data-cv="tint"] .nv-tab.today[data-charge="charging"] .tt-arc { stroke: var(--charge); }   /* arc stays for the whole charge */
+  /* tint wash pulses in/out TWICE then stops (the arc keeps going) */
+  .tt-tint { position: absolute; inset: 0; border-radius: inherit; background: #e8f7ee; opacity: 0; z-index: 0; pointer-events: none; }
+  @keyframes ttTintPulse { 0% { opacity: 0; } 50% { opacity: 1; } 100% { opacity: 0; } }
+  .nv-wrap[data-cv="tint"] .nv-tab.today[data-charge="charging"] .tt-tint { animation: ttTintPulse calc(2.2s*var(--speed)) ease-in-out 2 both; }
+  .nv-wrap[data-cv="tint"] .nv-tab.today[data-charge="charging"] .tt-shimmer { opacity: 1; }
+  .nv-wrap[data-cv="tint"] .nv-tab.today[data-charge="charging"] .tt-shimmer::before { animation: ttShimmer calc(2.2s*var(--speed)) ease-in-out 2; }
+
+  /* E · AURORA — a faint green gradient flows inside the pill; ring → green ⚡ */
+  .tt-aurora { position: absolute; inset: 0; border-radius: inherit; overflow: hidden; opacity: 0; z-index: 0; pointer-events: none; transition: opacity 400ms var(--out); }
+  .tt-aurora::before {
+    content: ""; position: absolute; inset: -60%;
+    background:
+      radial-gradient(42% 52% at 24% 34%, rgba(30,154,85,0.30), transparent 62%),
+      radial-gradient(46% 56% at 76% 66%, rgba(52,199,89,0.26), transparent 64%),
+      radial-gradient(36% 46% at 62% 18%, rgba(120,210,160,0.22), transparent 62%);
+    filter: blur(4px);
+    animation: ttAurora calc(6s*var(--speed)) ease-in-out infinite alternate;
+  }
+  @keyframes ttAurora {
+    0%   { transform: translate(-6%,-4%) scale(1.12) rotate(0deg); }
+    100% { transform: translate(6%,5%)  scale(1.28) rotate(8deg); }
+  }
+  @keyframes ttAuroraLife { 0% { opacity: 0; } 6% { opacity: 1; } 86% { opacity: 1; } 100% { opacity: 0; } }
+  .nv-wrap[data-cv="aurora"] .nv-tab.today { overflow: hidden; }
+  .nv-wrap[data-cv="aurora"] .tt-icon, .nv-wrap[data-cv="aurora"] .nv-tab.today .nv-lab { position: relative; z-index: 2; }
+  /* aurora plays for ~8s then stops (holds at 0) — the zap + arc stay */
+  .nv-wrap[data-cv="aurora"] .nv-tab.today[data-charge="charging"] .tt-aurora { animation: ttAuroraLife calc(8s*var(--speed)) ease-in-out 1 forwards; }
+  .nv-wrap[data-cv="aurora"] .nv-tab.today[data-charge="charging"] .tt-arc { stroke: var(--charge); }
+  .nv-wrap[data-cv="aurora"] .nv-tab.today[data-charge="charging"] .tt-ring { opacity: 0; }
+  .nv-wrap[data-cv="aurora"] .nv-tab.today[data-charge="charging"] .tt-bolt { opacity: 1; transform: scale(1); }
+  .nv-wrap[data-cv="aurora"] .nv-tab.today[data-charge="charging"] .tt-bolt svg { animation: ttBoltPulse calc(1.4s*var(--speed)) ease-in-out infinite; }
+  @media (prefers-reduced-motion: reduce) { .tt-aurora::before { animation: none; } }
+
+  /* F · CHROME — liquid chrome flows UP into the ring to the charge level (subtle) */
+  .tt-chrome {
+    position: absolute; left: 50%; top: 50%; transform: translate(-50%,-50%) scale(0.72);
+    width: 21px; height: 21px; border-radius: 50%; overflow: hidden;
+    opacity: 0; z-index: 1; pointer-events: none;
+    box-shadow: inset 0 0 0 1.4px #b6bfc9, inset 0 1px 1px rgba(255,255,255,0.55), 0 1px 2px rgba(0,0,0,0.16);
+    transition: opacity 320ms var(--out), transform 460ms var(--out);
+  }
+  /* the chrome liquid — height is driven by the charge % */
+  .tt-cf {
+    position: absolute; left: -25%; right: -25%; bottom: 0; height: 0;
+    background: linear-gradient(180deg, #f6f9fc 0%, #c9d2db 32%, #adb7c2 56%, #ccd5de 80%, #e9eef3 100%);
+    transition: height 160ms linear;
+  }
+  .tt-cf::before {   /* meniscus / gentle slosh on the surface */
+    content: ""; position: absolute; left: -10%; right: -10%; top: -3px; height: 7px; border-radius: 50%;
+    background: #f1f4f8;
+    animation: ttCfWave calc(3s*var(--speed)) ease-in-out infinite alternate;
+  }
+  .tt-cf::after {   /* soft metallic sheen drifting across (subtle life) */
+    content: ""; position: absolute; inset: 0;
+    background: linear-gradient(115deg, transparent 36%, rgba(255,255,255,0.55) 50%, transparent 64%);
+    background-size: 220% 100%;
+    animation: ttCfSheen calc(4.5s*var(--speed)) ease-in-out infinite;
+  }
+  @keyframes ttCfWave  { from { transform: translateX(-8%) scaleY(0.82); } to { transform: translateX(8%) scaleY(1.12); } }
+  @keyframes ttCfSheen { 0% { background-position: 140% 0; } 100% { background-position: -40% 0; } }
+  /* mercury holds ONCE (~6s, chrome-intro), then cross-fades to a green zap + progress arc */
+  .nv-wrap[data-cv="chrome"] .tt-ring,
+  .nv-wrap[data-cv="chrome"] .tt-arc,
+  .nv-wrap[data-cv="chrome"] .tt-track { transition: opacity 340ms var(--out), stroke 340ms var(--out); }
+  .nv-wrap[data-cv="chrome"] .nv-tab.today[data-charge="charging"] .tt-arc { stroke: var(--charge); }   /* steady state = green arc */
+  .nv-wrap[data-cv="chrome"] .nv-tab.today[data-charge="charging"] .tt-ring { opacity: 0; }             /* ring → zap */
+  .nv-wrap[data-cv="chrome"] .nv-tab.today[data-charge="charging"] .tt-bolt { opacity: 1; transform: scale(1); }
+  .nv-wrap[data-cv="chrome"] .nv-tab.today[data-charge="charging"] .tt-bolt svg { animation: ttBoltPulse calc(1.4s*var(--speed)) ease-in-out infinite; }
+  /* the beautiful hand-off: zap springs in with an overshoot + green glow flash */
+  .nv-wrap[data-cv="chrome"] .nv-tab.today.zap-in .tt-bolt { animation: ttChromeBoltIn calc(0.56s*var(--speed)) cubic-bezier(0.22,1,0.36,1) both; }
+  @keyframes ttChromeBoltIn {
+    0%   { opacity: 0; transform: scale(0.55); filter: drop-shadow(0 0 5px rgba(30,154,85,0)); }
+    55%  { opacity: 1; transform: scale(1.12); filter: drop-shadow(0 0 6px rgba(30,154,85,0.85)); }
+    100% { opacity: 1; transform: scale(1);    filter: drop-shadow(0 0 0 rgba(30,154,85,0)); }
+  }
+  .nv-wrap[data-cv="chrome"] .nv-tab.today.chrome-intro .tt-chrome { opacity: 1; transform: translate(-50%,-50%) scale(1); }
+  .nv-wrap[data-cv="chrome"] .nv-tab.today.chrome-intro .tt-ring,
+  .nv-wrap[data-cv="chrome"] .nv-tab.today.chrome-intro .tt-arc,
+  .nv-wrap[data-cv="chrome"] .nv-tab.today.chrome-intro .tt-track { opacity: 0; }
+  .nv-wrap[data-cv="chrome"] .nv-tab.today.chrome-intro .tt-bolt { opacity: 0; animation: none; }
+  @media (prefers-reduced-motion: reduce) { .tt-cf::before, .tt-cf::after { animation: none; } }
+  /* WebGL canvas replaces the CSS fill when available */
+  .tt-gl { position: absolute; inset: 0; width: 100%; height: 100%; display: block; border-radius: 50%; z-index: 1; }
+  .tt-chrome.gl-on .tt-cf { display: none; }
+  .tt-chrome::after { content: ""; position: absolute; inset: 0; border-radius: 50%; pointer-events: none; z-index: 2;
+    box-shadow: inset 0 0 0 1.3px rgba(255,255,255,0.30), inset 0 1px 2px rgba(255,255,255,0.45), inset 0 -1.5px 3px rgba(0,50,25,0.35); }
+
+  /* decoration layers (hidden until their concept is charging) */
+  .tt-mag, .tt-comet { position: absolute; inset: 0; opacity: 0; pointer-events: none; }
+  .tt-mag { display: grid; place-items: center; z-index: 0; }
+  .tt-comet { z-index: 4; }
+  .tt-orb { position: absolute; left: 50%; top: 50%; width: 15px; height: 15px; margin: -7.5px 0 0 -7.5px;
+    border-radius: 50%; opacity: 0; pointer-events: none; z-index: 1;
+    background: radial-gradient(circle at 50% 42%, #c6ffdd 0%, var(--charge) 46%, rgba(30,154,85,0.34) 78%, transparent 100%);
+    box-shadow: 0 0 6px 1px rgba(30,154,85,0.5); }
+
+  /* G · RIPPLE — MagSafe-style concentric rings emanate on connect (arc + ring glyph stay) */
+  .nv-wrap[data-cv="ripple"] .nv-tab.today[data-charge="charging"] .tt-arc { stroke: var(--charge); }
+  .nv-wrap[data-cv="ripple"] .nv-tab.today[data-charge="charging"] .tt-mag { opacity: 1; }
+  .tt-mag::before, .tt-mag::after { content: ""; position: absolute; width: 18px; height: 18px; border-radius: 50%; border: 1.5px solid var(--charge); }
+  .nv-wrap[data-cv="ripple"] .nv-tab.today[data-charge="charging"] .tt-mag::before { animation: ttMagWave calc(2.3s*var(--speed)) var(--out) infinite; }
+  .nv-wrap[data-cv="ripple"] .nv-tab.today[data-charge="charging"] .tt-mag::after  { animation: ttMagWave calc(2.3s*var(--speed)) var(--out) infinite; animation-delay: calc(1.15s*var(--speed)); }
+  @keyframes ttMagWave { 0% { transform: scale(0.5); opacity: 0; } 16% { opacity: 0.55; } 100% { transform: scale(2.0); opacity: 0; } }
+
+  /* H · CURRENT — a glowing comet head orbits the ring with a trailing arc (arc + ring glyph stay) */
+  .nv-wrap[data-cv="current"] .nv-tab.today[data-charge="charging"] .tt-arc { stroke: var(--charge); }
+  .nv-wrap[data-cv="current"] .nv-tab.today[data-charge="charging"] .tt-comet { opacity: 1; animation: ttSpin calc(1.5s*var(--speed)) linear infinite; }
+  .tt-comet::before { content: ""; position: absolute; left: 50%; top: 50%; width: 3.6px; height: 3.6px; margin: -1.8px 0 0 -1.8px;
+    border-radius: 50%; background: #eafff2; transform: translateY(-11.16px); box-shadow: 0 0 6px 1.5px var(--charge), 0 0 3px #fff; }
+  .tt-comet::after { content: ""; position: absolute; inset: 0; border-radius: 50%;
+    background: conic-gradient(from 0deg, transparent 0deg, transparent 280deg, rgba(30,154,85,0.0) 280deg, var(--charge) 358deg, transparent 360deg);
+    -webkit-mask: radial-gradient(circle, transparent 10.0px, #000 10.5px, #000 11.9px, transparent 12.3px);
+            mask: radial-gradient(circle, transparent 10.0px, #000 10.5px, #000 11.9px, transparent 12.3px); }
+  @keyframes ttSpin { to { transform: rotate(360deg); } }
+
+  /* I · ORB — a soft plasma orb fills the centre and breathes (ring glyph hidden) */
+  .nv-wrap[data-cv="orb"] .nv-tab.today[data-charge="charging"] .tt-arc { stroke: var(--charge); }
+  .nv-wrap[data-cv="orb"] .nv-tab.today[data-charge="charging"] .tt-ring { opacity: 0; }
+  .nv-wrap[data-cv="orb"] .nv-tab.today[data-charge="charging"] .tt-orb { opacity: 1; animation: ttOrbBreath calc(2.6s*var(--speed)) ease-in-out infinite; }
+  @keyframes ttOrbBreath { 0%,100% { transform: scale(0.8); opacity: 0.72; } 50% { transform: scale(1.06); opacity: 1; } }
+
+  @media (prefers-reduced-motion: reduce) {
+    .tt-mag::before, .tt-mag::after, .tt-comet, .tt-orb { animation: none !important; }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .tl-liquid::before { animation: none; }
+  }
 </style>
 </head>
 <body>
@@ -1849,6 +2115,96 @@
     </div>
   </section>
 
+  <!-- ══ 08 · Today tab · Ring charging ═══════ -->
+  <section class="ix" id="ring-charging">
+    <div class="ix-head">
+      <div class="ix-title">
+        <span class="ix-num">08</span>
+        <h2>Today Tab · Ring Charging</h2>
+      </div>
+      <button class="spec-btn" data-spec="ring-charging" data-title="Ring Charging · Motion spec" data-sub="Figma · Phoenix workspace · node 798-43626">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/></svg>
+        Motion spec
+      </button>
+    </div>
+
+    <div class="ix-stage">
+      <div class="nv-wrap" id="nvWrap" data-cv="ring">
+        <div class="nv-bar">
+          <div class="nv-tab today" id="todayTab" data-charge="battery">
+            <div class="tl-glow"></div>
+            <div class="tl-liquid"></div>
+            <div class="tt-tint"></div>
+            <div class="tt-shimmer"></div>
+            <div class="tt-aurora"></div>
+            <div class="tt-icon" id="ttIcon">
+              <div class="tt-glow2"></div>
+              <span class="tt-pulse"></span>
+              <span class="tt-pulse p2"></span>
+              <img class="tt-ring" src="assets/navbar/ring.svg" alt="" />
+              <svg class="tt-prog" viewBox="0 0 24 24"><circle class="tt-track" cx="12" cy="12" r="11.16"/><circle class="tt-arc" id="ttArc" cx="12" cy="12" r="11.16"/></svg>
+              <div class="tt-chrome"><div class="tt-cf"></div><canvas class="tt-gl"></canvas></div>
+              <span class="tt-center-glyph tt-bolt"><svg viewBox="0 0 14 20" fill="currentColor"><path d="M8 0 0 11h5l-1 9 8-11H7l1-9z"/></svg></span>
+              <span class="tt-orb"></span>
+              <span class="tt-comet"></span>
+              <span class="tt-mag"></span>
+              <span class="tt-ripple"></span>
+            </div>
+            <span class="nv-lab tt-lab" id="ttLab">today</span>
+          </div>
+
+          <div class="nv-tab">
+            <span class="nv-ico"><img src="assets/navbar/icon-longevity.svg" alt="" /></span>
+            <span class="nv-lab">longevity</span>
+          </div>
+          <div class="nv-tab">
+            <span class="nv-ico"><img src="assets/navbar/icon-jade.svg" alt="" /></span>
+            <span class="nv-lab">jade</span>
+          </div>
+          <div class="nv-tab">
+            <span class="nv-ico"><img src="assets/navbar/icon-powerplugs.svg" alt="" /></span>
+            <span class="nv-lab">powerplugs</span>
+          </div>
+          <div class="nv-tab">
+            <span class="nv-ico"><img src="assets/navbar/icon-zones.svg" alt="" /></span>
+            <span class="nv-lab">zones</span>
+          </div>
+        </div>
+        <div class="nv-fab"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg></div>
+      </div>
+
+      <div class="stage-foot">
+        <div class="ctl">
+          <button class="btn" id="nvPlug">Plug in to charge</button>
+          <div class="ctl-group">
+            <span class="ctl-label">Concept</span>
+            <div class="seg" data-seg="nv-concept">
+              <button data-cv="ring" class="on">A · Ring</button>
+              <button data-cv="liquid">B · Liquid</button>
+              <button data-cv="pulse">C · Pulse</button>
+              <button data-cv="tint">D · Tint</button>
+              <button data-cv="aurora">E · Aurora</button>
+              <button data-cv="chrome">F · Chrome</button>
+              <button data-cv="ripple">G · Ripple</button>
+              <button data-cv="current">H · Current</button>
+              <button data-cv="orb">I · Orb</button>
+            </div>
+          </div>
+          <div class="ctl-group">
+            <span class="ctl-label">Speed</span>
+            <div class="seg" data-seg="nv-speed">
+              <button data-speed="1" class="on">1×</button>
+              <button data-speed="2">0.5×</button>
+              <button data-speed="4">0.25×</button>
+            </div>
+          </div>
+        </div>
+        <div class="stage-hint">Default: black battery gauge (charge %). Plug in to charge — pick a concept: A arc fills · B liquid fills the pill · C energy pulses</div>
+      </div>
+    </div>
+  </section>
+
+
 </main>
 
 <!-- ── Spec modal (shared) ─────────────────── -->
@@ -2105,6 +2461,97 @@
   </div>
 </template>
 
+<template id="spec-ring-charging">
+  <div class="acc open">
+    <button class="acc-head"><span>01 · Default &amp; plug-in (shared)</span><svg class="chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg></button>
+    <div class="acc-body"><div class="acc-inner"><div class="spec">
+      <div class="sp"><div class="sp-t">Default (not charging): a <b>black</b> battery gauge rings the icon, showing charge % <span class="sp-v">arc + faint track, 24px band · 1.68px · r11.16</span></div></div>
+      <div class="sp"><div class="sp-t">Plug-in: connected pop <span class="sp-v">scale 0.9→1.16→1, 420ms</span> + green ripple; ring glyph → ⚡. No text change (label stays "today").</div>
+        <div class="sp-p">Climbs ≈60% → 80% then holds to signal "on charge" — no 100%/completion. Drive from the real charge stream in production; fire a light haptic on connect.</div></div>
+      <div class="sp"><div class="sp-t">Three concept options share the same tab/script — only the charge cue differs (selector below).</div></div>
+    </div></div></div>
+  </div>
+  <div class="acc">
+    <button class="acc-head"><span>A · Ring</span><svg class="chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg></button>
+    <div class="acc-body"><div class="acc-inner"><div class="spec">
+      <div class="sp"><div class="sp-t">The gauge arc transitions black → green <span class="sp-v">#0F0F0F → #1E9A55, 320ms</span> and fills around the ring.</div>
+        <div class="sp-p">Precise, data-forward — the icon doubles as the level gauge.</div></div>
+    </div></div></div>
+  </div>
+  <div class="acc">
+    <button class="acc-head"><span>B · Liquid</span><svg class="chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg></button>
+    <div class="acc-body"><div class="acc-inner"><div class="spec">
+      <div class="sp"><div class="sp-t">The white pill fills with green liquid from the bottom <span class="sp-v">height 60% → 80%</span>, gentle slosh on the surface <span class="sp-v">2.4s ease-in-out alternate</span></div>
+        <div class="sp-p">Liquid clipped to the capsule; ⚡ + label go white for contrast, soft inset glow. The arc fades while charging.</div></div>
+    </div></div></div>
+  </div>
+  <div class="acc">
+    <button class="acc-head"><span>C · Pulse</span><svg class="chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg></button>
+    <div class="acc-body"><div class="acc-inner"><div class="spec">
+      <div class="sp"><div class="sp-t">Energy rings radiate outward from the icon <span class="sp-v">scale 0.7→2.2, 1.9s ease-out · 2 rings, 0.95s apart</span> over a breathing green aura</div>
+        <div class="sp-p">Ambient "it's charging" cue — reads as active energy transfer rather than a precise level.</div></div>
+    </div></div></div>
+  </div>
+  <div class="acc">
+    <button class="acc-head"><span>D · Tint</span><svg class="chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg></button>
+    <div class="acc-body"><div class="acc-inner"><div class="spec">
+      <div class="sp"><div class="sp-t">Ring glyph stays as-is; the green arc fills around it (like A) <span class="sp-v">arc #0F0F0F → #1E9A55</span></div></div>
+      <div class="sp"><div class="sp-t">The pill picks up a very faint green tint <span class="sp-v">#fff → #EEF9F1, 380ms ease-out</span></div></div>
+      <div class="sp"><div class="sp-t">Tint + shimmer play only for a brief intro (~3.8s) then settle; the arc stays.</div>
+        <div class="sp-p">Deliberately subtle — an ambient "it's charging" wash, not a spotlight.</div></div>
+    </div></div></div>
+  </div>
+  <div class="acc">
+    <button class="acc-head"><span>E · Aurora</span><svg class="chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg></button>
+    <div class="acc-body"><div class="acc-inner"><div class="spec">
+      <div class="sp"><div class="sp-t">A faint green gradient flows inside the pill while charging <span class="sp-v">3 soft radial greens · drift+scale+rotate · 6s ease-in-out alternate</span></div>
+        <div class="sp-p">Continuous, ambient aurora (clipped to the capsule, blurred) — replaces D's sweep with living motion.</div></div>
+      <div class="sp"><div class="sp-t">Ring glyph is replaced by a green ⚡ zap; the arc fills green around it</div></div>
+    </div></div></div>
+  </div>
+  <div class="acc">
+    <button class="acc-head"><span>F · Chrome</span><svg class="chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg></button>
+    <div class="acc-body"><div class="acc-inner"><div class="spec">
+      <div class="sp"><div class="sp-t">Plays <b>once</b> on connect (~3s), then a spring hand-off to the green zap + progress arc <span class="sp-v">~3s, then zap-in</span></div>
+        <div class="sp-p">A real <b>WebGL</b> liquid-mercury surface pours in from the side (smooth, no noise) over ~1.4s and holds full to ~3s, then drains+shrinks as the green ⚡ bolt springs in with an overshoot and a brief green glow flash, leaving the progress arc — the steady charge state.</div></div>
+      <div class="sp"><div class="sp-t">Smooth <b>liquid mercury</b> — low-frequency sine flow (no fbm/grain) → surface normals → tight reflective specular for genuine metallic depth</div></div>
+      <div class="sp"><div class="sp-t">Fresnel <b>rim specular</b> brightens the edges; the highlight is <b>chromatically aberrated</b> (R/B channel split) with edge colour fringing. Green metallic palette (deep → bright).</div></div>
+      <div class="sp"><div class="sp-t">Production: port the fragment shader to Metal (iOS) / a render-effect; this prototype runs it in WebGL on an 84² buffer. CSS chrome fill is the no-WebGL fallback.</div></div>
+    </div></div></div>
+  </div>
+  <div class="acc">
+    <button class="acc-head"><span>G · Ripple</span><svg class="chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg></button>
+    <div class="acc-body"><div class="acc-inner"><div class="spec">
+      <div class="sp"><div class="sp-t">MagSafe-style: concentric green rings emanate from the icon while charging <span class="sp-v">2 rings · 2.3s loop · 1.15s stagger</span></div>
+        <div class="sp-p">The ring glyph + green progress arc stay as the gauge; two rings expand (scale 0.5 → 2.0) and fade out on an ease-out curve, offset by half the cycle so one is always emanating. Reads as "connected / wirelessly charging."</div></div>
+      <div class="sp"><div class="sp-t">Production: fire one ring burst on connect (haptic), then loop gently; pair with the system charge chip.</div></div>
+    </div></div></div>
+  </div>
+  <div class="acc">
+    <button class="acc-head"><span>H · Current</span><svg class="chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg></button>
+    <div class="acc-body"><div class="acc-inner"><div class="spec">
+      <div class="sp"><div class="sp-t">A glowing comet head orbits the ring with a fading trail <span class="sp-v">1.5s / rev · linear</span></div>
+        <div class="sp-p">A bright dot (white-green, glowing) rides the gauge circumference; a conic-gradient tail (~78°) fades behind it. The green progress arc + ring glyph stay underneath. Reads as literal current flowing in.</div></div>
+      <div class="sp"><div class="sp-t">Trail = conic gradient masked to the arc radius (r 11.16); head = blurred specular dot. Production: optionally speed the orbit with charge rate.</div></div>
+    </div></div></div>
+  </div>
+  <div class="acc">
+    <button class="acc-head"><span>I · Orb</span><svg class="chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg></button>
+    <div class="acc-body"><div class="acc-inner"><div class="spec">
+      <div class="sp"><div class="sp-t">A soft plasma orb fills the centre and gently breathes <span class="sp-v">scale 0.8 ↔ 1.06 · 2.6s ease-in-out</span></div>
+        <div class="sp-p">The ring glyph is replaced by a radial-gradient green orb (bright core → brand green → soft falloff) that breathes in scale + opacity; the green progress arc rings it. Bio/metabolic feel — alive rather than mechanical.</div></div>
+      <div class="sp"><div class="sp-t">Production: tie the breathing rate to a real signal (e.g. charge rate or HR) for a living indicator.</div></div>
+    </div></div></div>
+  </div>
+  <div class="acc">
+    <button class="acc-head"><span>Tokens</span><svg class="chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg></button>
+    <div class="acc-body"><div class="acc-inner"><div class="spec">
+      <div class="sp"><div class="sp-t">Charge green #1E9A55 · track rgba(0,0,0,.10) · arc 1.68px round cap · gauge ⌀22 around the 16.73px ring glyph</div></div>
+      <div class="sp"><div class="sp-t">Active Today pill #fff fully-rounded · tint #EEF9F1 · bar rgba(0,0,0,.10) + white border, blur · labels JetBrains Mono 10px</div></div>
+    </div></div></div>
+  </div>
+</template>
+
 <template id="spec-calibration">
   <div class="acc open">
     <button class="acc-head"><span>01 · When it fires</span><svg class="chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg></button>
@@ -2190,7 +2637,7 @@
 <script>
   // ── Responsive: wrap each fixed-width mock so it scales to fit the viewport ──
   (function () {
-    [['#lpCard',370], ['#biCard',370], ['#lpCardV2',370], ['#adCard',370], ['#batScreen',402], ['.nf-wrap',370], ['#ciPhone',402]]
+    [['#lpCard',370], ['#biCard',370], ['#lpCardV2',370], ['#adCard',370], ['#batScreen',402], ['.nf-wrap',370], ['#ciPhone',402], ['#nvWrap',402]]
       .forEach(([sel, mw]) => {
         const el = document.querySelector(sel);
         if (!el || el.parentElement.classList.contains('ix-fit')) return;
@@ -2912,6 +3359,159 @@
     stage.querySelector('[data-ci-replay]').addEventListener('click', () => {
       collapse();
       setTimeout(expand, 520 * speed());
+    });
+  })();
+
+  // ── Today tab · Charging (one tab, 3 concepts via selector) ──
+  (function () {
+    const wrap = document.getElementById('nvWrap');
+    if (!wrap) return;
+    const pill = document.getElementById('todayTab');
+    const icon = document.getElementById('ttIcon');
+    const arc = document.getElementById('ttArc');
+    const liquid = wrap.querySelector('.tl-liquid');
+    const btn = document.getElementById('nvPlug');
+    const stage = wrap.closest('.ix-stage');
+    const C = 2 * Math.PI * 11.16;               // dash circumference ≈ 70.12 (24px band)
+    const speed = () => +(wrap.style.getPropertyValue('--speed') || 1);
+    const START = 60, TARGET = 80;               // shows "on charge" — climbs a bit, not to 100
+    let pct = START, raf = 0, charging = false;
+    const easeOut = t => 1 - Math.pow(1 - t, 3);
+
+    const cf = wrap.querySelector('.tt-cf');
+    function setArc(p) { arc.style.strokeDashoffset = String(C * (1 - p / 100)); }
+    function setLiquid(p) { liquid.style.height = p + '%'; if (cf) cf.style.height = p + '%'; }
+    setArc(pct);                                 // default: black battery gauge at current %
+
+    // ── F · Chrome: WebGL green liquid-metal (depth, rim specular, aberration, side flow) ──
+    const vessel = wrap.querySelector('.tt-chrome');
+    const glcvs = wrap.querySelector('.tt-gl');
+    let gl, glProg, uTime, uRes, uFill, glOk = false, glRAF = 0;
+    let chromeT0 = 0, chromeTimer = 0;
+    const glT0 = performance.now();
+    function initGL() {
+      if (glOk || !glcvs) return;
+      gl = glcvs.getContext('webgl', { alpha: true, premultipliedAlpha: false, antialias: true });
+      if (!gl) return;
+      const VS = 'attribute vec2 p; void main(){ gl_Position = vec4(p,0.,1.); }';
+      const FS = [
+        'precision highp float;',
+        'uniform float uTime; uniform vec2 uRes; uniform float uFill;',
+        // smooth liquid-mercury surface — pure low-freq sine flow, no noise
+        'float Hh(vec2 uv){ float t=uTime*0.6;',
+        '  return sin(uv.x*4.0+t)*0.5 + sin((uv.x*2.2+uv.y*3.0)-t*0.8)*0.35 + sin(uv.y*3.6+t*0.55)*0.3; }',
+        'void main(){',
+        '  vec2 uv = gl_FragCoord.xy/uRes; vec2 pp = uv*2.0-1.0; float r=length(pp);',
+        '  if(r>1.0) discard;',
+        '  float t=uTime*0.6;',
+        '  float edge = uFill*1.12 - 0.06 + sin(uv.y*6.0 + t*1.6)*0.03;',     // smooth wavy fill from the side
+        '  if(uv.x > edge) discard;',
+        '  float e=0.02;',
+        '  float hx=Hh(uv+vec2(e,0.))-Hh(uv-vec2(e,0.));',
+        '  float hy=Hh(uv+vec2(0.,e))-Hh(uv-vec2(0.,e));',
+        '  vec3 n=normalize(vec3(-hx*3.0,-hy*3.0,1.0));',                      // smooth normal → depth
+        '  vec3 L=normalize(vec3(0.4,0.55,0.72)); vec3 V=vec3(0.,0.,1.); vec3 Hv=normalize(L+V);',
+        '  float diff=clamp(dot(n,L)*0.5+0.5,0.,1.);',
+        '  float spec=pow(max(dot(n,Hv),0.),44.0);',                          // tight, reflective (mercury)
+        // palette anchored on the brand green #1E9A55 so mercury matches the zap/arc
+        '  vec3 dark=vec3(0.02,0.20,0.10), mid=vec3(0.118,0.604,0.333), lite=vec3(0.42,0.86,0.58);',
+        '  vec3 col=mix(dark,mid,smoothstep(0.2,0.62,diff));',
+        '  col=mix(col,lite,smoothstep(0.6,0.95,diff));',
+        '  float rim=pow(r,3.0); col += rim*vec3(0.20,0.72,0.42)*0.6;',       // fresnel rim (brand green)
+        '  float sR=pow(max(dot(normalize(n+vec3(0.05,0.,0.)),Hv),0.),44.0);',// chromatic aberration on specular
+        '  float sB=pow(max(dot(normalize(n-vec3(0.05,0.,0.)),Hv),0.),44.0);',
+        '  col += vec3(sR, spec, sB)*1.25;',
+        '  col.r += pow(r,5.0)*0.5; col.b += pow(max(r-0.04,0.),5.0)*0.35;',  // edge colour fringing
+        '  float a=smoothstep(1.0,0.9,r);',
+        '  gl_FragColor=vec4(col, a);',
+        '}'
+      ].join('\n');
+      function sh(t, src) { const s = gl.createShader(t); gl.shaderSource(s, src); gl.compileShader(s); return s; }
+      glProg = gl.createProgram();
+      gl.attachShader(glProg, sh(gl.VERTEX_SHADER, VS));
+      gl.attachShader(glProg, sh(gl.FRAGMENT_SHADER, FS));
+      gl.linkProgram(glProg);
+      if (!gl.getProgramParameter(glProg, gl.LINK_STATUS)) return;
+      gl.useProgram(glProg);
+      const bf = gl.createBuffer(); gl.bindBuffer(gl.ARRAY_BUFFER, bf);
+      gl.bufferData(gl.ARRAY_BUFFER, new Float32Array([-1,-1, 3,-1, -1,3]), gl.STATIC_DRAW);
+      const lp = gl.getAttribLocation(glProg, 'p'); gl.enableVertexAttribArray(lp); gl.vertexAttribPointer(lp, 2, gl.FLOAT, false, 0, 0);
+      uTime = gl.getUniformLocation(glProg, 'uTime'); uRes = gl.getUniformLocation(glProg, 'uRes'); uFill = gl.getUniformLocation(glProg, 'uFill');
+      gl.enable(gl.BLEND); gl.blendFunc(gl.SRC_ALPHA, gl.ONE_MINUS_SRC_ALPHA);
+      const S = 84; glcvs.width = S; glcvs.height = S; gl.viewport(0, 0, S, S);
+      glOk = true; if (vessel) vessel.classList.add('gl-on');
+    }
+    function glLoop() {
+      if (!(charging && wrap.dataset.cv === 'chrome' && pill.classList.contains('chrome-intro'))) { glRAF = 0; return; }
+      const f = Math.min(1, (performance.now() - chromeT0) / (1400 * speed()));  // mercury flows in once
+      gl.clearColor(0, 0, 0, 0); gl.clear(gl.COLOR_BUFFER_BIT);
+      gl.uniform1f(uTime, (performance.now() - glT0) / 1000);
+      gl.uniform2f(uRes, glcvs.width, glcvs.height);
+      gl.uniform1f(uFill, f);
+      gl.drawArrays(gl.TRIANGLES, 0, 3);
+      glRAF = requestAnimationFrame(glLoop);
+    }
+    // F · Chrome plays ONCE on connect (mercury pours in), then settles to the normal green arc gauge
+    function playChromeIntro() {
+      if (wrap.dataset.cv !== 'chrome' || !charging) return;
+      initGL();
+      chromeT0 = performance.now();
+      pill.classList.add('chrome-intro');
+      if (glOk && !glRAF) glLoop();
+      clearTimeout(chromeTimer);
+      chromeTimer = setTimeout(() => {            // pour in (~1.4s) + hold to ~3s, then hand off to the zap
+        cancelAnimationFrame(raf); pct = TARGET;
+        arc.style.transition = 'none';            // prime the arc empty while it's still hidden
+        arc.style.strokeDashoffset = String(C);
+        void arc.offsetWidth;
+        pill.classList.remove('chrome-intro');    // reveal zap + arc
+        pill.classList.add('zap-in');
+        arc.style.transition = 'stroke-dashoffset ' + (680 * speed()) + 'ms cubic-bezier(0.22,1,0.36,1), opacity ' + (340 * speed()) + 'ms ease-out, stroke ' + (340 * speed()) + 'ms ease-out';
+        setArc(pct);                              // draw the progress arc: empty → level
+        setTimeout(() => { pill.classList.remove('zap-in'); arc.style.transition = ''; }, 760 * speed());
+      }, 3000 * speed());
+    }
+
+    function plugIn() {
+      if (charging) return;
+      charging = true;
+      btn.textContent = 'Unplug';
+      pill.dataset.charge = 'charging';
+      void icon.offsetWidth; icon.classList.add('connect');   // connected pop + ripple
+      setTimeout(() => icon.classList.remove('connect'), 650 * speed());
+      setLiquid(pct);
+      playChromeIntro();
+      const from = pct, span = TARGET - from, dur = 3000 * speed(), t0 = performance.now();
+      (function step(now) {
+        const t = Math.min(1, (now - t0) / dur);
+        pct = from + span * easeOut(t);
+        setArc(pct); setLiquid(pct);             // drive both; the active concept's CSS shows the right one
+        if (t < 1) raf = requestAnimationFrame(step);
+      })(t0);
+    }
+    function unplug() {
+      charging = false;
+      cancelAnimationFrame(raf);
+      pill.dataset.charge = 'battery';
+      icon.classList.remove('connect');
+      arc.style.transition = '';
+      pct = START; setArc(pct); setLiquid(0);
+      pill.classList.remove('chrome-intro', 'zap-in'); clearTimeout(chromeTimer);
+      btn.textContent = 'Plug in to charge';
+    }
+
+    btn.addEventListener('click', () => (charging ? unplug() : plugIn()));
+    stage.querySelector('[data-seg="nv-concept"]').addEventListener('click', e => {
+      const b = e.target.closest('button'); if (!b) return;
+      stage.querySelectorAll('[data-seg="nv-concept"] button').forEach(x => x.classList.toggle('on', x === b));
+      wrap.dataset.cv = b.dataset.cv;            // switch concept live
+      if (b.dataset.cv === 'chrome') playChromeIntro();
+      else { pill.classList.remove('chrome-intro', 'zap-in'); clearTimeout(chromeTimer); }
+    });
+    stage.querySelector('[data-seg="nv-speed"]').addEventListener('click', e => {
+      const b = e.target.closest('button'); if (!b) return;
+      stage.querySelectorAll('[data-seg="nv-speed"] button').forEach(x => x.classList.toggle('on', x === b));
+      wrap.style.setProperty('--speed', b.dataset.speed);
     });
   })();
 
